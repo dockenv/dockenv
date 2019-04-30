@@ -1,2 +1,2 @@
 # lnmp
-Xiekers Linux Nginx MYSQL PHP
+Linux Nginx MYSQL/MariaDB PHP
