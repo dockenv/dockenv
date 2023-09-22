@@ -1,0 +1,255 @@
+services:
+  nginx:
+    image: ${DOCKER_REGISTRY}/nginx:latest
+    container_name: nginx
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+    ports:
+      - "8080:80"
+      - "443:443"
+    volumes:
+      - ./runtime/logs/nginx:/var/log/nginx
+      - ./runtime/conf/nginx:/etc/nginx
+      - /Users/imxieke/Code/Project/boxs:/data
+      # - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf
+    links:
+      # set php74 aliasor direct to use mysql57 no alias set
+      - php74:php74
+    networks:
+      - boxs
+
+  php74:
+    image: ${DOCKER_REGISTRY}/php:74
+    container_name: php74
+    restart: always
+    depends_on:
+      - mysql57
+    ports:
+      - "19000:9000"
+    volumes:
+      - ./runtime/logs/php74:/var/log/php-fpm
+      - /Users/imxieke/Code/Project/boxs:/data
+    networks:
+      - boxs
+    dns:
+      - 223.5.5.5
+      - 8.8.8.8
+
+  php80:
+    image: ${DOCKER_REGISTRY}/php:80
+    container_name: php80
+    restart: always
+    depends_on:
+      - mysql57
+      - redis
+      - memcached
+    links:
+      - mysql57:mysql57
+      - redis:redis
+      - memcached:memcached
+    ports:
+      - "29000:9000"
+    volumes:
+      - /Users/imxieke/Code/Project/boxs:/data
+      - ./runtime/logs/php80/:/var/log/php-fpm/
+    networks:
+      - boxs
+    dns:
+      - 223.5.5.5
+      - 8.8.8.8
+
+  php81:
+    image: ${DOCKER_REGISTRY}/php:81
+    container_name: php81
+    restart: always
+    depends_on:
+      - mysql57
+    ports:
+      - "39000:9000"
+    volumes:
+      - ./runtime/logs/php81/:/var/log/php-fpm/
+    networks:
+      - boxs
+    dns:
+      - 223.5.5.5
+      - 8.8.8.8
+
+  php82:
+    image: ${DOCKER_REGISTRY}/php:82
+    container_name: php82
+    restart: always
+    depends_on:
+      - mysql57
+    ports:
+      - "49000:9000"
+    volumes:
+      - ./runtime/logs/php82/:/var/log/php-fpm/
+    networks:
+      - boxs
+    dns:
+      - 223.5.5.5
+      - 8.8.8.8
+
+  mysql57:
+    image: ${DOCKER_REGISTRY}/mysql:5.7
+    hostname: mysql57
+    container_name: mysql57
+    restart: always
+    expose:
+      - "3306"
+    ports:
+      - "${MYSQL57_PORT}:3306"
+    volumes:
+      # - ./runtime/data/mysql57:/var/lib/mysql
+      - mysql57:/var/lib/mysql
+      - ./runtime/logs/mysql57/:/var/log/mysql
+    environment:
+      - TZ=${TIMEZONE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL57_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL57_DATABASE}
+      - MYSQL_USER=${MYSQL57_USER}
+      - MYSQL_PASSWORD=${MYSQL57_PASSWORD}
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    #only for container without host
+    networks:
+      - boxs
+
+  postgres15:
+    image: ${DOCKER_REGISTRY}/postgres:15
+    hostname: postgres15
+    container_name: postgres15
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres15:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=default
+      - POSTGRES_USER=dockenv
+      - POSTGRES_PASSWORD=dockenv
+
+  mysql80:
+    image: ${DOCKER_REGISTRY}/mysql:8.0
+    hostname: mysql80
+    container_name: mysql80
+    restart: always
+    # Only for Container
+    expose:
+      - "3306"
+    ports:
+      - "${MYSQL80_PORT}:3306"
+    volumes:
+      - mysql80:/var/lib/mysql
+      - ./runtime/logs/mysql80/:/var/log/mysql
+    environment:
+      - TZ=${TIMEZONE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL80_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL80_DATABASE}
+      - MYSQL_USER=${MYSQL80_USER}
+      - MYSQL_PASSWORD=${MYSQL80_PASSWORD}
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    #only for container without host
+    networks:
+      - boxs
+
+  mariadb:
+    image: ${DOCKER_REGISTRY}/mariadb:latest
+    hostname: mariadb
+    container_name: mariadb
+    restart: always
+    expose:
+      - "3306"
+    ports:
+      - "${MARIADB_PORT}:3306"
+    volumes:
+      - mariadb:/var/lib/mysql
+      - ./runtime/logs/mariadb/:/var/log/mysql
+    environment:
+      - TZ=${TIMEZONE}
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    #only for container without host
+    networks:
+      - boxs
+
+  redis:
+    image: ${DOCKER_REGISTRY}/redis:latest
+    container_name: redis
+    hostname: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - boxs
+    restart: always
+    volumes:
+      - ./conf/redis:/etc/redis
+      - ./data/redis:/data
+      - ./logs/redis:/var/log/redis
+    command: redis-server /etc/redis/redis.conf
+
+  memcached:
+    image: ${DOCKER_REGISTRY}/memcached:latest
+    hostname: memcached
+    container_name: memcached
+    ports:
+      - ${MEMCACHED_PORT}:11211
+
+  mongo:
+    image: ${DOCKER_REGISTRY}/mongo:latest
+    ports:
+      - ${MONGO_PORT}:27017
+    restart: always
+    volumes:
+      - mongo:/data/db
+      - ./runtime/conf/mongo:/data/configdb
+      - ./runtime/logs/mongo:/var/log/mongo
+    environment:
+      TZ: ${TIMEZONE}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    # command: mongod --config /etc/mongod.conf
+    networks:
+      - boxs
+
+  rabbitmq:
+    image: ${DOCKER_REGISTRY}/rabbitmq:latest
+    hostname: rabbitmq
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "4369:4369"
+      - "5671:5671"
+      - "5672:5672"
+      - "15691:15691"
+      - "15692:15692"
+      - "25672:25672"
+    environment:
+      TZ: "${TIMEZONE}"
+      RABBITMQ_DEFAULT_USER: "${RABBITMQ_DEFAULT_USER}"
+      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_DEFAULT_PASS}"
+      # RABBITMQ_NODE_IP_ADDRESS: "${RBMQ_IP}"
+    volumes:
+      - ./runtime/data/rabbitmq:/var/lib/rabbitmq
+      - ./runtime/logs/rabbitmq:/var/log/rabbitmq
+    networks:
+      - boxs
+
+volumes:
+  redis:
+  mongo:
+  mariadb:
+  mongo-conf:
+  mysql57:
+  mysql80:
+  postgres15:
+
+networks:
+  boxs:
+    driver: bridge
