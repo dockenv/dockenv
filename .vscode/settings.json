@@ -1,4 +1,5 @@
 {
 	"editor.inlineSuggest.enabled": true,
-	"diffEditor.codeLens": true
+  "diffEditor.codeLens": true,
+  "editor.inlineSuggest.showToolbar": "onHover"
 }

@@ -1,0 +1,19 @@
+services:
+  # aria2:
+  #   image: ${DOCKER_REGISTRY_COMPOSE}/aria2:latest
+  #   hostname: aria2
+  #   container_name: aria2
+  #   ports:
+  #     - "6800:6800"
+  #     - "6801:6801"
+  #     - "6802-6999:6802-6999"
+  #   volumes:
+  #     - $HOME/Downloads:/data/downloads:rw
+  #     # - /Users/imxieke/Code/Project/dockenv/images/aria2/conf:/etc/aria2c
+  #   environment:
+  #     RPC_SECRET: dockenv
+  #     ARIA2_PORT: 6800
+  #     WEBUI_PORT: 6801
+  #     DHT_PORT: "6802-6999"
+  #   networks:
+  #     boxs:

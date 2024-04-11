@@ -9,18 +9,22 @@ services:
           cpus: "1"
           memory: 512M
     ports:
-      - "8080:80"
-      - "443:443"
-    volumes:
-      - ./runtime/logs/nginx:/var/log/nginx
-      - ./runtime/conf/nginx:/etc/nginx
-      - /Users/imxieke/Code/Project/boxs:/data
+      - "${NGINX_PORT}:80"
+      - "${NGINX_SSL_PORT}:443"
+    # volumes:
+      # - ./runtime/logs/nginx:/var/log/nginx
+      # - ./runtime/conf/nginx:/etc/nginx
       # - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf
     links:
-      # set php74 aliasor direct to use mysql57 no alias set
+      # set php74 alias or direct to use mysql57 no alias set
       - php74:php74
+      - php82:php82
     networks:
-      - boxs
+      dockenv:
+        ipv4_address: ${IP_NGINX}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
 
   php74:
     image: ${DOCKER_REGISTRY}/php:74
@@ -32,12 +36,11 @@ services:
       - "19000:9000"
     volumes:
       - ./runtime/logs/php74:/var/log/php-fpm
-      - /Users/imxieke/Code/Project/boxs:/data
     networks:
-      - boxs
+      - dockenv
     dns:
-      - 223.5.5.5
-      - 8.8.8.8
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
 
   php80:
     image: ${DOCKER_REGISTRY}/php:80
@@ -54,13 +57,12 @@ services:
     ports:
       - "29000:9000"
     volumes:
-      - /Users/imxieke/Code/Project/boxs:/data
-      - ./runtime/logs/php80/:/var/log/php-fpm/
+      - ./runtime/logs/php80/:/var/log/php-fpm
     networks:
-      - boxs
+      - dockenv
     dns:
-      - 223.5.5.5
-      - 8.8.8.8
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
 
   php81:
     image: ${DOCKER_REGISTRY}/php:81
@@ -73,10 +75,10 @@ services:
     volumes:
       - ./runtime/logs/php81/:/var/log/php-fpm/
     networks:
-      - boxs
+      - dockenv
     dns:
-      - 223.5.5.5
-      - 8.8.8.8
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
 
   php82:
     image: ${DOCKER_REGISTRY}/php:82
@@ -89,10 +91,24 @@ services:
     volumes:
       - ./runtime/logs/php82/:/var/log/php-fpm/
     networks:
-      - boxs
+      - dockenv
     dns:
-      - 223.5.5.5
-      - 8.8.8.8
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+  postgres15:
+    image: ${DOCKER_REGISTRY}/postgres:15
+    hostname: postgres15
+    container_name: postgres15
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres15:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=default
+      - POSTGRES_USER=dockenv
+      - POSTGRES_PASSWORD=dockenv
 
   mysql57:
     image: ${DOCKER_REGISTRY}/mysql:5.7
@@ -116,21 +132,8 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     #only for container without host
     networks:
-      - boxs
-
-  postgres15:
-    image: ${DOCKER_REGISTRY}/postgres:15
-    hostname: postgres15
-    container_name: postgres15
-    restart: always
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres15:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=default
-      - POSTGRES_USER=dockenv
-      - POSTGRES_PASSWORD=dockenv
+      dockenv:
+        ipv4_address: ${IP_MYSQL57}
 
   mysql80:
     image: ${DOCKER_REGISTRY}/mysql:8.0
@@ -154,7 +157,8 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     #only for container without host
     networks:
-      - boxs
+      dockenv:
+        ipv4_address: ${IP_MYSQL80}
 
   mariadb:
     image: ${DOCKER_REGISTRY}/mariadb:latest
@@ -177,7 +181,8 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     #only for container without host
     networks:
-      - boxs
+      dockenv:
+        ipv4_address: ${IP_MARIADB}
 
   redis:
     image: ${DOCKER_REGISTRY}/redis:latest
@@ -185,14 +190,18 @@ services:
     hostname: redis
     ports:
       - "6379:6379"
-    networks:
-      - boxs
     restart: always
     volumes:
       - ./conf/redis:/etc/redis
       - ./data/redis:/data
       - ./logs/redis:/var/log/redis
     command: redis-server /etc/redis/redis.conf
+    networks:
+      dockenv:
+        ipv4_address: ${IP_REDIS}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
 
   memcached:
     image: ${DOCKER_REGISTRY}/memcached:latest
@@ -200,6 +209,119 @@ services:
     container_name: memcached
     ports:
       - ${MEMCACHED_PORT}:11211
+    networks:
+      dockenv:
+        ipv4_address: ${IP_MEMCACHED}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+  minio:
+    image: ${DOCKER_REGISTRY}/minio:latest
+    hostname: minio
+    environment:
+      - MINIO_ADDRESS=0.0.0.0:9001 # minio port
+      - MINIO_CONSOLE_ADDRESS=0.0.0.0:9002 # minio console port
+    container_name: minio
+    command: server /data --ftp="address=:8021" --ftp="passive-port-range=30000-40000" --sftp="address=:8022" --sftp="ssh-private-key=${HOME}/.ssh/id_rsa"
+    ports:
+      - 9001:9000
+      - 9002:9002
+      - 8021:8021
+      - 8022:8022
+    networks:
+      - dockenv
+
+  elastic:
+    image: ${DOCKER_REGISTRY}/elastic:latest
+    hostname: elastic
+    container_name: elastic
+    restart: always
+    environment:
+      - ELASTIC_PASSWORD=dockenv
+      # - ENROLLMENT_TOKEN=dockenv
+      - cluster.name=${NAME}
+      - discovery.type=single-node
+      # 默认禁用 elasticsearch https 和登陆账号密码 仅适用于 Docker 测试环境
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      # - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      # - script.painless.regex.enabled=true
+      # - node.master=false
+      # - node.data=true
+      - TZ=${TIMEZONE}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - elastic:/usr/share/elasticsearch/data
+      # - ${ELASTICSEARCH_CONF_FILE}:/usr/share/elasticsearch/config/elasticsearch.yml
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      dockenv:
+        ipv4_address: ${IP_ELASTICSEARCH}
+
+  kibana:
+    image: ${DOCKER_REGISTRY}/kibana:latest
+    hostname: kibana
+    container_name: kibana
+    restart: always
+    environment:
+      - TZ=${TIMEZONE}
+      - SERVER_NAME=kibana
+      # - ELASTICSEARCH_HOSTS=["http://${ELASTICSEARCH_IP}:9200"]
+      - ELASTICSEARCH_HOSTS=["https://elastic:9200"]
+    ports:
+      - "${KIBANA_PORT}:5601"
+    depends_on:
+      - elastic
+    links:
+      - elastic:elastic
+    networks:
+      dockenv:
+        ipv4_address: ${IP_KIBANA}
+
+  logstash:
+    image: ${DOCKER_REGISTRY}/logstash:latest
+    hostname: logstash
+    container_name: logstash
+    restart: always
+    environment:
+      - TZ=${TIMEZONE}
+    ports:
+      - "9600:9600"
+      - "5044:5044"
+    depends_on:
+      - elastic
+    links:
+      - elastic:elastic
+    networks:
+      dockenv:
+        ipv4_address: ${IP_LOGSTASH}
+
+  meilisearch:
+    image: ${DOCKER_REGISTRY}/meilisearch:latest
+    hostname: meilisearch
+    container_name: meilisearch
+    environment:
+      - MEILI_HTTP_ADDR=0.0.0.0:7700
+      # - CONFIG_FILE_PATH=path/to/config.toml
+      # - MEILI_DB_PATH=./data.ms
+      # - MEILI_DUMP_DIR=dumps/
+      - MEILI_ENV=development # development OR production
+      - MEILI_HTTP_PAYLOAD_SIZE_LIMIT="1024 Mb" # Gb Mb
+      - MEILI_LOG_LEVEL=INFO # OFF, ERROR, WARN, INFO, DEBUG, TRACE
+    ports:
+      - ${MEILISEARCH_PORT}:7700
 
   mongo:
     image: ${DOCKER_REGISTRY}/mongo:latest
@@ -216,7 +338,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
     # command: mongod --config /etc/mongod.conf
     networks:
-      - boxs
+      - dockenv
 
   rabbitmq:
     image: ${DOCKER_REGISTRY}/rabbitmq:latest
@@ -234,22 +356,91 @@ services:
       TZ: "${TIMEZONE}"
       RABBITMQ_DEFAULT_USER: "${RABBITMQ_DEFAULT_USER}"
       RABBITMQ_DEFAULT_PASS: "${RABBITMQ_DEFAULT_PASS}"
-      # RABBITMQ_NODE_IP_ADDRESS: "${RBMQ_IP}"
+      # RABBITMQ_NODE_IP_ADDRESS: "${IP_RMQ}"
     volumes:
       - ./runtime/data/rabbitmq:/var/lib/rabbitmq
       - ./runtime/logs/rabbitmq:/var/log/rabbitmq
     networks:
-      - boxs
+      dockenv:
+        ipv4_address: ${IP_RMQ}
+
+  gitea:
+    image: ${DOCKER_REGISTRY}/gitea:latest
+    hostname: gitea
+    container_name: gitea
+    restart: always
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      # - GITEA_CUSTOM=/etc/gitea
+    ports:
+      - "${GITEA_WEB_PORT}:3000"
+      - "${GITEA_SSH_PORT}:22"
+    depends_on:
+      - mysql80
+    links:
+      - mysql80:mysql80
+    volumes:
+      - gitea:/data
+      # - ./runtime/conf/gitea:/etc/gitea
+    networks:
+      dockenv:
+        ipv4_address: ${IP_GITEA}
+
+  # default password ,default user: root
+  # grep 'Password:' /etc/gitlab/initial_root_password
+  # gitlab:
+  #   # image: ${DOCKER_REGISTRY}/gitea:latest
+  #   image: registry.gitlab.cn/omnibus/gitlab-jh:latest
+  #   hostname: gitlab
+  #   container_name: gitlab
+  #   restart: always
+  #   shm_size: 256mb
+  #   environment:
+  #     - GITLAB_ROOT_PASSWORD=dockenv@gitlab
+  #   ports:
+  #     - "2022:22"
+  #     - "2080:80"
+  #     - "2443:443"
+  #   volumes:
+  #     # - gitlabconf:/etc/gitlab
+  #     - ./runtime/conf/gitlab:/etc/gitlab
+  #     # - gitlablogs:/var/log/gitlab
+  #     - ./runtime/logs/gitlab:/var/log/gitlab
+  #     - gitlabdata:/var/opt/gitlab
+  #   networks:
+  #     dockenv:
+
+  # portainer:
+  #   image: ${DOCKER_REGISTRY}/portainer:latest
+  #   hostname: portainer
+  #   container_name: portainer
+  #   restart: always
+  #   ports:
+  #     - "9000:9000"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock:cached
+  #     - ./runtime/data/portainer/:/data:cached
+  #   networks:
+  #     boxs:
 
 volumes:
   redis:
   mongo:
-  mariadb:
   mongo-conf:
+  mariadb:
   mysql57:
   mysql80:
   postgres15:
+  elastic:
+  gitea:
 
 networks:
-  boxs:
+  dockenv:
     driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: ${DOCKER_SUBNET_IP}
+          ip_range: ${DOCKER_SUBNET_RANGE}
+          gateway: ${DOCKER_SUBNET_GATEWAY}
