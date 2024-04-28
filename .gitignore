@@ -1,2 +1,8 @@
 data/*
 logs/*
+
+runtime/data/meilisearch/*
+runtime/data/rabbitmq/*
+runtime/data/redis/*
+runtime/data/mysql57/*
+runtime/data/mysql80/*
