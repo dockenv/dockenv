@@ -1,12 +1,41 @@
 services:
+  nginx:
+    image: ${DOCKER_REGISTRY}/nginx:latest
+    container_name: nginx
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+    ports:
+      - "${NGINX_PORT}:80"
+      - "${NGINX_SSL_PORT}:443"
+    volumes:
+    - ./runtime/logs/nginx:/var/log/nginx
+    # - ./runtime/conf/nginx:/etc/nginx
+    # - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf
+    links:
+      # set php74 alias or direct to use mysql57 no alias set
+      - php74:php74
+      - php82:php82
+    networks:
+      dockenv:
+        ipv4_address: ${IP_NGINX}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
   php74:
     image: ${DOCKER_REGISTRY}/php:74
     container_name: php74
     restart: always
     depends_on:
       - mysql57
+      - redis
+      - memcached
     ports:
-      - "19000:9000"
+      - "${PHP74_PORT}:9000"
     volumes:
       - ./runtime/logs/php74:/var/log/php-fpm
     networks:
@@ -15,59 +44,21 @@ services:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
 
-  php80:
-    image: ${DOCKER_REGISTRY}/php:80
-    container_name: php80
+  php82:
+    image: ${DOCKER_REGISTRY}/php:82
+    container_name: php82
     restart: always
     depends_on:
       - mysql57
-      - redis
-      - memcached
-    links:
-      - mysql57:mysql57
-      - redis:redis
-      - memcached:memcached
     ports:
-      - "29000:9000"
+      - "${PHP82_PORT}:9000"
     volumes:
-      - ./runtime/logs/php80/:/var/log/php-fpm
+      - ./runtime/logs/php82/:/var/log/php-fpm/
     networks:
       - dockenv
     dns:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
-
-  php81:
-    image: ${DOCKER_REGISTRY}/php:81
-    container_name: php81
-    restart: always
-    depends_on:
-      - mysql57
-    ports:
-      - "39000:9000"
-    volumes:
-      - ./runtime/logs/php81/:/var/log/php-fpm/
-    networks:
-      - dockenv
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
-
-
-
-  postgres15:
-    image: ${DOCKER_REGISTRY}/postgres:15
-    hostname: postgres15
-    container_name: postgres15
-    restart: always
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres15:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=default
-      - POSTGRES_USER=dockenv
-      - POSTGRES_PASSWORD=dockenv
 
   mysql57:
     image: ${DOCKER_REGISTRY}/mysql:5.7
@@ -79,13 +70,13 @@ services:
     ports:
       - "${MYSQL57_PORT}:3306"
     volumes:
-      # - ./runtime/data/mysql57:/var/lib/mysql
-      - mysql57:/var/lib/mysql
+      - ./runtime/data/mysql57:/var/lib/mysql
+      # - mysql57:/var/lib/mysql
       - ./runtime/logs/mysql57/:/var/log/mysql
     environment:
       - TZ=${TIMEZONE}
       - MYSQL_ROOT_PASSWORD=${MYSQL57_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL57_DATABASE}
+      # - MYSQL_DATABASE=${MYSQL57_DATABASE}
       - MYSQL_USER=${MYSQL57_USER}
       - MYSQL_PASSWORD=${MYSQL57_PASSWORD}
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
@@ -105,12 +96,13 @@ services:
     ports:
       - "${MYSQL80_PORT}:3306"
     volumes:
-      - mysql80:/var/lib/mysql
+      - ./runtime/data/mysql57:/var/lib/mysql
+      # - mysql80:/var/lib/mysql
       - ./runtime/logs/mysql80/:/var/log/mysql
     environment:
       - TZ=${TIMEZONE}
       - MYSQL_ROOT_PASSWORD=${MYSQL80_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL80_DATABASE}
+      # - MYSQL_DATABASE=${MYSQL80_DATABASE}
       - MYSQL_USER=${MYSQL80_USER}
       - MYSQL_PASSWORD=${MYSQL80_PASSWORD}
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
@@ -118,30 +110,6 @@ services:
     networks:
       dockenv:
         ipv4_address: ${IP_MYSQL80}
-
-  mariadb:
-    image: ${DOCKER_REGISTRY}/mariadb:latest
-    hostname: mariadb
-    container_name: mariadb
-    restart: always
-    expose:
-      - "3306"
-    ports:
-      - "${MARIADB_PORT}:3306"
-    volumes:
-      - mariadb:/var/lib/mysql
-      - ./runtime/logs/mariadb/:/var/log/mysql
-    environment:
-      - TZ=${TIMEZONE}
-      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
-      - MARIADB_DATABASE=${MARIADB_DATABASE}
-      - MARIADB_USER=${MARIADB_USER}
-      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-    #only for container without host
-    networks:
-      dockenv:
-        ipv4_address: ${IP_MARIADB}
 
   redis:
     image: ${DOCKER_REGISTRY}/redis:latest
@@ -152,8 +120,8 @@ services:
     restart: always
     volumes:
       - ./conf/redis:/etc/redis
-      - ./data/redis:/data
-      - ./logs/redis:/var/log/redis
+      - ./runtime/data/redis:/data
+      - ./runtime/logs/redis:/var/log/redis
     command: redis-server /etc/redis/redis.conf
     networks:
       dockenv:
@@ -175,147 +143,23 @@ services:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
 
-  minio:
-    image: ${DOCKER_REGISTRY}/minio:latest
-    hostname: minio
-    environment:
-      - MINIO_ADDRESS=0.0.0.0:9001 # minio port
-      - MINIO_CONSOLE_ADDRESS=0.0.0.0:9002 # minio console port
-    container_name: minio
-    command: server /data --ftp="address=:8021" --ftp="passive-port-range=30000-40000" --sftp="address=:8022" --sftp="ssh-private-key=${HOME}/.ssh/id_rsa"
-    ports:
-      - 9001:9000
-      - 9002:9002
-      - 8021:8021
-      - 8022:8022
-    networks:
-      - dockenv
-
-  elastic:
-    image: ${DOCKER_REGISTRY}/elastic:latest
-    hostname: elastic
-    container_name: elastic
-    restart: always
-    environment:
-      - ELASTIC_PASSWORD=dockenv
-      # - ENROLLMENT_TOKEN=dockenv
-      - cluster.name=${NAME}
-      - discovery.type=single-node
-      # 默认禁用 elasticsearch https 和登陆账号密码 仅适用于 Docker 测试环境
-      - xpack.security.enabled=false
-      - xpack.security.enrollment.enabled=false
-      - xpack.security.http.ssl.enabled=false
-      - xpack.security.transport.ssl.enabled=false
-      # - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      # - script.painless.regex.enabled=true
-      # - node.master=false
-      # - node.data=true
-      - TZ=${TIMEZONE}
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-    volumes:
-      - elastic:/usr/share/elasticsearch/data
-      # - ${ELASTICSEARCH_CONF_FILE}:/usr/share/elasticsearch/config/elasticsearch.yml
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    networks:
-      dockenv:
-        ipv4_address: ${IP_ELASTICSEARCH}
-
-  kibana:
-    image: ${DOCKER_REGISTRY}/kibana:latest
-    hostname: kibana
-    container_name: kibana
-    restart: always
-    environment:
-      - TZ=${TIMEZONE}
-      - SERVER_NAME=kibana
-      # - ELASTICSEARCH_HOSTS=["http://${ELASTICSEARCH_IP}:9200"]
-      - ELASTICSEARCH_HOSTS=["https://elastic:9200"]
-    ports:
-      - "${KIBANA_PORT}:5601"
-    depends_on:
-      - elastic
-    links:
-      - elastic:elastic
-    networks:
-      dockenv:
-        ipv4_address: ${IP_KIBANA}
-
-  logstash:
-    image: ${DOCKER_REGISTRY}/logstash:latest
-    hostname: logstash
-    container_name: logstash
-    restart: always
-    environment:
-      - TZ=${TIMEZONE}
-    ports:
-      - "9600:9600"
-      - "5044:5044"
-    depends_on:
-      - elastic
-    links:
-      - elastic:elastic
-    networks:
-      dockenv:
-        ipv4_address: ${IP_LOGSTASH}
-
-  meilisearch:
-    image: ${DOCKER_REGISTRY}/meilisearch:latest
-    hostname: meilisearch
-    container_name: meilisearch
-    environment:
-      - MEILI_HTTP_ADDR=0.0.0.0:7700
-      # - CONFIG_FILE_PATH=path/to/config.toml
-      # - MEILI_DB_PATH=./data.ms
-      # - MEILI_DUMP_DIR=dumps/
-      - MEILI_ENV=development # development OR production
-      - MEILI_HTTP_PAYLOAD_SIZE_LIMIT="1024 Mb" # Gb Mb
-      - MEILI_LOG_LEVEL=INFO # OFF, ERROR, WARN, INFO, DEBUG, TRACE
-    ports:
-      - ${MEILISEARCH_PORT}:7700
-
-  mongo:
-    image: ${DOCKER_REGISTRY}/mongo:latest
-    ports:
-      - ${MONGO_PORT}:27017
-    restart: always
-    volumes:
-      - mongo:/data/db
-      - ./runtime/conf/mongo:/data/configdb
-      - ./runtime/logs/mongo:/var/log/mongo
-    environment:
-      TZ: ${TIMEZONE}
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
-    # command: mongod --config /etc/mongod.conf
-    networks:
-      - dockenv
-
   rabbitmq:
     image: ${DOCKER_REGISTRY}/rabbitmq:latest
     hostname: rabbitmq
     container_name: rabbitmq
     restart: always
     ports:
-      - "4369:4369"
-      - "5671:5671"
-      - "5672:5672"
-      - "15691:15691"
-      - "15692:15692"
-      - "25672:25672"
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_MQTT_PORT}:1883"
+      - "${RABBITMQ_MQTT_WEB_PORT}:15692"
+      - "${RABBITMQ_STOMP_PORT}:61613"
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
     environment:
       TZ: "${TIMEZONE}"
       RABBITMQ_DEFAULT_USER: "${RABBITMQ_DEFAULT_USER}"
       RABBITMQ_DEFAULT_PASS: "${RABBITMQ_DEFAULT_PASS}"
-      # RABBITMQ_NODE_IP_ADDRESS: "${IP_RMQ}"
+      RABBITMQ_DEFAULT_VHOST: "${RABBITMQ_DEFAULT_VHOST}"
+      RABBITMQ_NODE_IP_ADDRESS: "${IP_RMQ}"
     volumes:
       - ./runtime/data/rabbitmq:/var/lib/rabbitmq
       - ./runtime/logs/rabbitmq:/var/log/rabbitmq
@@ -323,76 +167,28 @@ services:
       dockenv:
         ipv4_address: ${IP_RMQ}
 
-  gitea:
-    image: ${DOCKER_REGISTRY}/gitea:latest
-    hostname: gitea
-    container_name: gitea
-    restart: always
-    environment:
-      - USER_UID=1000
-      - USER_GID=1000
-      # - GITEA_CUSTOM=/etc/gitea
-    ports:
-      - "${GITEA_WEB_PORT}:3000"
-      - "${GITEA_SSH_PORT}:22"
-    depends_on:
-      - mysql80
-    links:
-      - mysql80:mysql80
+  # https://www.meilisearch.com/docs/learn/configuration/instance_options
+  # https://raw.githubusercontent.com/meilisearch/meilisearch/latest/config.toml
+  meilisearch:
+    image: ${DOCKER_REGISTRY}/meilisearch:latest
+    hostname: meilisearch
+    container_name: meilisearch
     volumes:
-      - gitea:/data
-      # - ./runtime/conf/gitea:/etc/gitea
-    networks:
-      dockenv:
-        ipv4_address: ${IP_GITEA}
-
-  # default password ,default user: root
-  # grep 'Password:' /etc/gitlab/initial_root_password
-  # gitlab:
-  #   # image: ${DOCKER_REGISTRY}/gitea:latest
-  #   image: registry.gitlab.cn/omnibus/gitlab-jh:latest
-  #   hostname: gitlab
-  #   container_name: gitlab
-  #   restart: always
-  #   shm_size: 256mb
-  #   environment:
-  #     - GITLAB_ROOT_PASSWORD=dockenv@gitlab
-  #   ports:
-  #     - "2022:22"
-  #     - "2080:80"
-  #     - "2443:443"
-  #   volumes:
-  #     # - gitlabconf:/etc/gitlab
-  #     - ./runtime/conf/gitlab:/etc/gitlab
-  #     # - gitlablogs:/var/log/gitlab
-  #     - ./runtime/logs/gitlab:/var/log/gitlab
-  #     - gitlabdata:/var/opt/gitlab
-  #   networks:
-  #     dockenv:
-
-  # portainer:
-  #   image: ${DOCKER_REGISTRY}/portainer:latest
-  #   hostname: portainer
-  #   container_name: portainer
-  #   restart: always
-  #   ports:
-  #     - "9000:9000"
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock:cached
-  #     - ./runtime/data/portainer/:/data:cached
-  #   networks:
-  #     boxs:
-
-volumes:
-  redis:
-  mongo:
-  mongo-conf:
-  mariadb:
-  mysql57:
-  mysql80:
-  postgres15:
-  elastic:
-  gitea:
+      - ./runtime/data/meilisearch:/data
+    environment:
+      # - MEILI_HTTP_ADDR=${IP_MEILISEARCH}:${MEILISEARCH_PORT}
+      # - CONFIG_FILE_PATH=path/to/config.toml
+      - MEILI_DB_PATH=/data/meilisearch
+      # - MEILI_DUMP_DIR=dumps/
+      - MEILI_MASTER_KEY=${DEFAULT_PASSWD}
+      - MEILI_ENV=development # development OR production
+      - MEILI_HTTP_PAYLOAD_SIZE_LIMIT=1073741824 # Gb Mb 1G
+      - MEILI_MAX_INDEXING_MEMORY=1073741824 # Gb Mb 1G
+      - MEILI_LOG_LEVEL=INFO # OFF, ERROR, WARN, INFO, DEBUG, TRACE
+      - MEILI_SCHEDULE_SNAPSHOT=3600
+      - MEILI_SNAPSHOT_DIR=/data/snapshot
+    ports:
+      - ${MEILISEARCH_PORT}:7700
 
 networks:
   dockenv:
