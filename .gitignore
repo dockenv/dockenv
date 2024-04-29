@@ -2,9 +2,4 @@
 data/*/*
 logs/*/*
 config/*/*
-runtime/data/meilisearch/*
-runtime/data/rabbitmq/*
-runtime/data/redis/*
-runtime/data/mysql57/*
-runtime/data/mysql80/*
-runtime/logs/*
+runtime
