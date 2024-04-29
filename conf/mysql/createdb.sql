@@ -1,7 +1,3 @@
-#
-# Copy createdb.sql.example to createdb.sql
-# then uncomment then set database name and username to create you need databases
-#
 # example: .env MYSQL_USER=appuser and needed db name is myshop_db
 #
 #    CREATE DATABASE IF NOT EXISTS `myshop_db` ;
@@ -16,8 +12,8 @@
 #     mysql -u root -p < /docker-entrypoint-initdb.d/createdb.sql
 #
 
-#CREATE DATABASE IF NOT EXISTS `dev_db_1` COLLATE 'utf8_general_ci' ;
-#GRANT ALL ON `dev_db_1`.* TO 'default'@'%' ;
+-- CREATE DATABASE IF NOT EXISTS `dev_db_1` COLLATE 'utf8_general_ci' ;
+-- GRANT ALL ON `dev_db_1`.* TO 'default'@'%' ;
 
 #CREATE DATABASE IF NOT EXISTS `dev_db_2` COLLATE 'utf8_general_ci' ;
 #GRANT ALL ON `dev_db_2`.* TO 'default'@'%' ;
