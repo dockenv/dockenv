@@ -1,0 +1,34 @@
+services:
+  mariadb:
+    image: ${DOCKER_REGISTRY}/mariadb:latest
+    hostname: mariadb
+    container_name: mariadb
+    restart: always
+    expose:
+      - "3306"
+    ports:
+      - "${MARIADB_PORT}:3306"
+    volumes:
+      - ./runtime/data/mariadb:/var/lib/mysql
+      - ./runtime/logs/mariadb/:/var/log/mysql
+    environment:
+      - TZ=${TIMEZONE}
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    #only for container without host
+    networks:
+      dockenv:
+        ipv4_address: ${IP_MARIADB}
+
+networks:
+  dockenv:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: ${DOCKER_SUBNET_IP}
+          ip_range: ${DOCKER_SUBNET_RANGE}
+          gateway: ${DOCKER_SUBNET_GATEWAY}

@@ -1,0 +1,33 @@
+services:
+  gitea:
+    image: ${DOCKER_REGISTRY}/gitea:latest
+    hostname: gitea
+    container_name: gitea
+    restart: always
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      # - GITEA_CUSTOM=/etc/gitea
+    ports:
+      - "${GITEA_WEB_PORT}:3000"
+      - "${GITEA_SSH_PORT}:22"
+    depends_on:
+      - mysql80
+    links:
+      - mysql80:mysql80
+    volumes:
+      - gitea:/data
+      # - ./runtime/conf/gitea:/etc/gitea
+    networks:
+      dockenv:
+        ipv4_address: ${IP_GITEA}
+
+networks:
+  dockenv:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: ${DOCKER_SUBNET_IP}
+          ip_range: ${DOCKER_SUBNET_RANGE}
+          gateway: ${DOCKER_SUBNET_GATEWAY}
