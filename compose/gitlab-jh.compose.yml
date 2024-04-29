@@ -1,0 +1,33 @@
+services:
+  # default password ,default user: root
+  # grep 'Password:' /etc/gitlab/initial_root_password
+  gitlab:
+    image: registry.gitlab.cn/omnibus/gitlab-jh:latest
+    hostname: gitlab
+    container_name: gitlab
+    restart: always
+    shm_size: 256mb
+    environment:
+      - GITLAB_ROOT_PASSWORD=dockenv@gitlab
+    ports:
+      - "2022:22"
+      - "2080:80"
+      - "2443:443"
+    volumes:
+      # - gitlabconf:/etc/gitlab
+      - ./runtime/conf/gitlab:/etc/gitlab
+      # - gitlablogs:/var/log/gitlab
+      - ./runtime/logs/gitlab:/var/log/gitlab
+      - gitlabdata:/var/opt/gitlab
+    networks:
+      dockenv:
+
+networks:
+  dockenv:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: ${DOCKER_SUBNET_IP}
+          ip_range: ${DOCKER_SUBNET_RANGE}
+          gateway: ${DOCKER_SUBNET_GATEWAY}

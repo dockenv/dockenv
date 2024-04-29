@@ -1,6 +1,7 @@
 services:
   nginx:
     image: ${DOCKER_REGISTRY}/nginx:latest
+    hostname: nginx
     container_name: nginx
     restart: always
     deploy:
@@ -12,11 +13,10 @@ services:
       - "${NGINX_PORT}:80"
       - "${NGINX_SSL_PORT}:443"
     volumes:
-    - ./runtime/logs/nginx:/var/log/nginx
-    # - ./runtime/conf/nginx:/etc/nginx
+    - ./logs/nginx:/var/log/nginx
+    # - ./conf/nginx:/etc/nginx
     # - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf
     links:
-      # set php74 alias or direct to use mysql57 no alias set
       - php74:php74
       - php82:php82
     networks:
@@ -28,16 +28,22 @@ services:
 
   php74:
     image: ${DOCKER_REGISTRY}/php:74
+    hostname: php74
     container_name: php74
     restart: always
     depends_on:
+      - mongo
       - mysql57
+      - mysql80
       - redis
       - memcached
+      - meilisearch
+      - minio
+      - rabbitmq
     ports:
       - "${PHP74_PORT}:9000"
     volumes:
-      - ./runtime/logs/php74:/var/log/php-fpm
+      - ./logs/php74:/var/log/php-fpm
     networks:
       - dockenv
     dns:
@@ -46,14 +52,22 @@ services:
 
   php82:
     image: ${DOCKER_REGISTRY}/php:82
+    hostname: php82
     container_name: php82
     restart: always
     depends_on:
+      - mongo
       - mysql57
+      - mysql80
+      - redis
+      - memcached
+      - meilisearch
+      - minio
+      - rabbitmq
     ports:
       - "${PHP82_PORT}:9000"
     volumes:
-      - ./runtime/logs/php82/:/var/log/php-fpm/
+      - ./logs/php82/:/var/log/php-fpm/
     networks:
       - dockenv
     dns:
@@ -70,9 +84,8 @@ services:
     ports:
       - "${MYSQL57_PORT}:3306"
     volumes:
-      - ./runtime/data/mysql57:/var/lib/mysql
-      # - mysql57:/var/lib/mysql
-      - ./runtime/logs/mysql57/:/var/log/mysql
+      - ./data/mysql57:/var/lib/mysql
+      - ./logs/mysql57:/var/log/mysql
     environment:
       - TZ=${TIMEZONE}
       - MYSQL_ROOT_PASSWORD=${MYSQL57_ROOT_PASSWORD}
@@ -84,21 +97,22 @@ services:
     networks:
       dockenv:
         ipv4_address: ${IP_MYSQL57}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
 
   mysql80:
     image: ${DOCKER_REGISTRY}/mysql:8.0
     hostname: mysql80
     container_name: mysql80
     restart: always
-    # Only for Container
     expose:
       - "3306"
     ports:
       - "${MYSQL80_PORT}:3306"
     volumes:
-      - ./runtime/data/mysql57:/var/lib/mysql
-      # - mysql80:/var/lib/mysql
-      - ./runtime/logs/mysql80/:/var/log/mysql
+      - ./data/mysql80:/var/lib/mysql
+      - ./logs/mysql80:/var/log/mysql
     environment:
       - TZ=${TIMEZONE}
       - MYSQL_ROOT_PASSWORD=${MYSQL80_ROOT_PASSWORD}
@@ -110,6 +124,53 @@ services:
     networks:
       dockenv:
         ipv4_address: ${IP_MYSQL80}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+  mongo:
+    image: ${DOCKER_REGISTRY}/mongo:latest
+    hostname: mongo
+    container_name: mongo
+    ports:
+      - ${MONGO_PORT}:27017
+    restart: always
+    volumes:
+      - ./data/mongo:/data/db
+      - ./conf/mongo:/data/configdb
+      - ./logs/mongo:/var/log/mongo
+    environment:
+      TZ: ${TIMEZONE}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    # command: mongod --config /etc/mongod.conf
+    networks:
+      dockenv:
+        ipv4_address: ${IP_MONGO}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+  postgres:
+    image: ${DOCKER_REGISTRY}/postgres:16
+    hostname: postgres
+    container_name: postgres
+    restart: always
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    networks:
+      dockenv:
+        ipv4_address: ${IP_POSTGRES}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
 
   redis:
     image: ${DOCKER_REGISTRY}/redis:latest
@@ -120,9 +181,10 @@ services:
     restart: always
     volumes:
       - ./conf/redis:/etc/redis
-      - ./runtime/data/redis:/data
-      - ./runtime/logs/redis:/var/log/redis
-    command: redis-server /etc/redis/redis.conf
+      - ./data/redis:/data
+      - ./logs/redis:/var/log/redis
+    # 数据持久化
+    command: redis-server /etc/redis/redis.conf --appendonly yes
     networks:
       dockenv:
         ipv4_address: ${IP_REDIS}
@@ -132,8 +194,8 @@ services:
 
   memcached:
     image: ${DOCKER_REGISTRY}/memcached:latest
-    hostname: memcached
     container_name: memcached
+    hostname: memcached
     ports:
       - ${MEMCACHED_PORT}:11211
     networks:
@@ -161,11 +223,14 @@ services:
       RABBITMQ_DEFAULT_VHOST: "${RABBITMQ_DEFAULT_VHOST}"
       RABBITMQ_NODE_IP_ADDRESS: "${IP_RMQ}"
     volumes:
-      - ./runtime/data/rabbitmq:/var/lib/rabbitmq
-      - ./runtime/logs/rabbitmq:/var/log/rabbitmq
+      - ./data/rabbitmq:/var/lib/rabbitmq
+      - ./logs/rabbitmq:/var/log/rabbitmq
     networks:
       dockenv:
         ipv4_address: ${IP_RMQ}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
 
   # https://www.meilisearch.com/docs/learn/configuration/instance_options
   # https://raw.githubusercontent.com/meilisearch/meilisearch/latest/config.toml
@@ -174,7 +239,7 @@ services:
     hostname: meilisearch
     container_name: meilisearch
     volumes:
-      - ./runtime/data/meilisearch:/data
+      - ./data/meilisearch:/data
     environment:
       # - MEILI_HTTP_ADDR=${IP_MEILISEARCH}:${MEILISEARCH_PORT}
       # - CONFIG_FILE_PATH=path/to/config.toml
@@ -189,6 +254,129 @@ services:
       - MEILI_SNAPSHOT_DIR=/data/snapshot
     ports:
       - ${MEILISEARCH_PORT}:7700
+    networks:
+      dockenv:
+        ipv4_address: ${IP_MEILISEARCH}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+  elastic:
+    image: ${DOCKER_REGISTRY}/elastic:latest
+    hostname: elastic
+    container_name: elastic
+    restart: always
+    environment:
+      - ELASTIC_PASSWORD=dockenv
+      # 此配置会导致无法启动
+      # - ENROLLMENT_TOKEN=dockenv
+      - cluster.name=${NAME}
+      - discovery.type=single-node
+      # 默认禁用 elasticsearch https 和登陆账号密码 仅适用于 Docker 测试环境
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      # - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      # - script.painless.regex.enabled=true
+      # - node.master=false
+      # - node.data=true
+      - TZ=${TIMEZONE}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      # - elastic:/usr/share/elasticsearch/data
+      - ./data/elastic:/data
+      # - ${ELASTICSEARCH_CONF_FILE}:/usr/share/elasticsearch/config/elasticsearch.yml
+    ports:
+      - "${ELASTIC_WEB_PORT}:9200"
+      - "${ELASTIC_PORT}:9300"
+    networks:
+      dockenv:
+        ipv4_address: ${IP_ELASTICSEARCH}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+  # volumes /usr/share/logstash/config/
+  logstash:
+    image: ${DOCKER_REGISTRY}/logstash:latest
+    hostname: logstash
+    container_name: logstash
+    restart: always
+    environment:
+      - TZ=${TIMEZONE}
+      - ELASTICSEARCH_HOSTS=["http://elastic:9200"]
+    ports:
+      - "${LOGSTASH_WEB_PORT}:9600"
+      - "${LOGSTASH_PORT}:5044"
+    depends_on:
+      - elastic
+    links:
+      - elastic:elasticsearch
+    networks:
+      dockenv:
+        ipv4_address: ${IP_LOGSTASH}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+  kibana:
+    image: ${DOCKER_REGISTRY}/kibana:latest
+    hostname: kibana
+    container_name: kibana
+    restart: always
+    environment:
+      - TZ=${TIMEZONE}
+      - SERVER_NAME=kibana
+      # - ELASTICSEARCH_HOSTS=["http://${ELASTICSEARCH_IP}:9200"]
+      - ELASTICSEARCH_HOSTS=["http://elastic:9200"]
+      - LS_JAVA_OPTS=-Xmx512m -Xms512m
+    ports:
+      - "${KIBANA_PORT}:5601"
+    depends_on:
+      - elastic
+    links:
+      - elastic:elastic
+    networks:
+      dockenv:
+        ipv4_address: ${IP_KIBANA}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+  # Object Storage Service(Compatible With Amazon S3 Protocol)
+  # TODO Fix president Storage -v ./data/minio:/data
+  minio:
+    image: ${DOCKER_REGISTRY}/minio:latest
+    hostname: minio
+    container_name: minio
+    environment:
+      - MINIO_ADDRESS=0.0.0.0:${MINIO_PORT} # minio port
+      - MINIO_CONSOLE_ADDRESS=0.0.0.0:${MINIO_WEB_PORT} # minio console port
+      - MINIO_ROOT_USER=${MINIO_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_PASSWORD}
+    container_name: minio
+    command: server /data --ftp="address=:${MINIO_FTP_PORT}" --ftp="passive-port-range=30000-40000"
+    # Add Sftp Support
+    # --sftp="address=:8022" --sftp="ssh-private-key=${HOME}/.ssh/id_rsa"
+    ports:
+      - ${MINIO_PORT}:${MINIO_PORT}
+      - ${MINIO_WEB_PORT}:${MINIO_WEB_PORT}
+      - ${MINIO_FTP_PORT}:${MINIO_FTP_PORT}
+    volumes:
+      - ./data/minio:/data
+    networks:
+      - dockenv
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
 
 networks:
   dockenv:
