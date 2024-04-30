@@ -9,8 +9,8 @@ services:
     ports:
       - "${MARIADB_PORT}:3306"
     volumes:
-      - ./runtime/data/mariadb:/var/lib/mysql
-      - ./runtime/logs/mariadb/:/var/log/mysql
+      - ../data/mariadb:/var/lib/mysql
+      - ../logs/mariadb/:/var/log/mysql
     environment:
       - TZ=${TIMEZONE}
       - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}

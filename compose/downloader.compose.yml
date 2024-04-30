@@ -9,7 +9,7 @@ services:
       - "6802-6999:6802-6999"
     volumes:
       - $HOME/Downloads:/data/downloads:rw
-      # - ./runtime/conf/aria2/conf:/etc/aria2c
+      # - ../conf/aria2/conf:/etc/aria2c
     environment:
       RPC_SECRET: dockenv
       ARIA2_PORT: 6800

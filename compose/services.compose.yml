@@ -1,0 +1,102 @@
+services:
+  # Object Storage Service(Compatible With Amazon S3 Protocol)
+  minio:
+    image: ${DOCKER_REGISTRY}/minio:latest
+    hostname: minio
+    container_name: minio
+    restart: always
+    expose:
+      - 19000
+      - 1921
+    environment:
+      - MINIO_ADDRESS=0.0.0.0:${MINIO_PORT} # minio port
+      - MINIO_CONSOLE_ADDRESS=0.0.0.0:${MINIO_WEB_PORT} # minio console port
+      - MINIO_ROOT_USER=${MINIO_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_PASSWORD}
+    command: server /data --ftp="address=:${MINIO_FTP_PORT}" --ftp="passive-port-range=30000-40000"
+    # Add Sftp Support
+    # --sftp="address=:8022" --sftp="ssh-private-key=${HOME}/.ssh/id_rsa"
+    ports:
+      - ${MINIO_PORT}:${MINIO_PORT}
+      - ${MINIO_WEB_PORT}:${MINIO_WEB_PORT}
+      - ${MINIO_FTP_PORT}:${MINIO_FTP_PORT}
+    volumes:
+      - ../data/minio:/data
+    networks:
+      - dockenv
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+  # https://www.meilisearch.com/docs/learn/configuration/instance_options
+  # https://raw.githubusercontent.com/meilisearch/meilisearch/latest/config.toml
+  meilisearch:
+    image: ${DOCKER_REGISTRY}/meilisearch:latest
+    hostname: meilisearch
+    container_name: meilisearch
+    restart: always
+    expose:
+      - 7700
+    volumes:
+      - ../data/meilisearch:/data
+    environment:
+      # - MEILI_HTTP_ADDR=${IP_MEILISEARCH}:${MEILISEARCH_PORT}
+      # - CONFIG_FILE_PATH=path/to/config.toml
+      - MEILI_DB_PATH=/data/meilisearch
+      # - MEILI_DUMP_DIR=dumps/
+      - MEILI_MASTER_KEY=${DEFAULT_PASSWD}
+      - MEILI_ENV=development # development OR production
+      - MEILI_HTTP_PAYLOAD_SIZE_LIMIT=1073741824 # Gb Mb 1G
+      - MEILI_MAX_INDEXING_MEMORY=1073741824 # Gb Mb 1G
+      - MEILI_LOG_LEVEL=INFO # OFF, ERROR, WARN, INFO, DEBUG, TRACE
+      - MEILI_SCHEDULE_SNAPSHOT=3600
+      - MEILI_SNAPSHOT_DIR=/data/snapshot
+    ports:
+      - ${MEILISEARCH_PORT}:7700
+    networks:
+      dockenv:
+        ipv4_address: ${IP_MEILISEARCH}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+  rabbitmq:
+    image: ${DOCKER_REGISTRY}/rabbitmq:latest
+    hostname: rabbitmq
+    container_name: rabbitmq
+    restart: always
+    expose:
+      - 5672
+      - 1883
+      - 61613
+    ports:
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_MQTT_PORT}:1883"
+      - "${RABBITMQ_MQTT_WEB_PORT}:15692"
+      - "${RABBITMQ_STOMP_PORT}:61613"
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
+    environment:
+      TZ: "${TIMEZONE}"
+      RABBITMQ_DEFAULT_USER: "${RABBITMQ_DEFAULT_USER}"
+      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_DEFAULT_PASS}"
+      RABBITMQ_DEFAULT_VHOST: "${RABBITMQ_DEFAULT_VHOST}"
+      RABBITMQ_NODE_IP_ADDRESS: "${IP_RMQ}"
+    volumes:
+      - ../data/rabbitmq:/var/lib/rabbitmq
+      - ../logs/rabbitmq:/var/log/rabbitmq
+    networks:
+      dockenv:
+        ipv4_address: ${IP_RMQ}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+networks:
+  dockenv:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: ${DOCKER_SUBNET_IP}
+          ip_range: ${DOCKER_SUBNET_RANGE}
+          gateway: ${DOCKER_SUBNET_GATEWAY}

@@ -20,7 +20,13 @@
 cp .env-example .env
 docker-compose up -d
 ```
-
+## Compose
+- anmp: Alpine + Nginx/Mysql/Mariadb+Redis/Memcache/PostgreSQL/Mongo
+- elk: Elastic/Logstash/Kibana
+- gitea: Gitea
+- services: Minio/RabbitMQ/Meilisearch
+- gitlab-jh: Gitlab-Jihu
+- mariadb: MariaDB latest
 
 ## 使用全局网络跨 compose 通信
 - name: dockenv-global
