@@ -6,19 +6,20 @@ services:
     hostname: gitlab
     container_name: gitlab
     restart: always
-    shm_size: 256mb
+    shm_size: 512mb
     environment:
-      - GITLAB_ROOT_PASSWORD=dockenv@gitlab
+      - GITLAB_ROOT_PASSWORD=${GITLAB_PASSWORD}
     ports:
       - "2022:22"
       - "2080:80"
       - "2443:443"
     volumes:
       # - gitlabconf:/etc/gitlab
-      - ./runtime/conf/gitlab:/etc/gitlab
       # - gitlablogs:/var/log/gitlab
-      - ./runtime/logs/gitlab:/var/log/gitlab
-      - gitlabdata:/var/opt/gitlab
+      # - gitlabdata:/var/opt/gitlab
+      - ../conf/gitlab:/etc/gitlab
+      - ../logs/gitlab:/var/log/gitlab
+      - ../data/gitlab:/var/opt/gitlab
     networks:
       dockenv:
 

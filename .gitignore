@@ -1,3 +1,6 @@
+
+!conf/nginx/conf.d/php.conf
+
 /.env
 data/*/*
 logs/*/*

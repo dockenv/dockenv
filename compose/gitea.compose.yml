@@ -16,8 +16,9 @@ services:
     links:
       - mysql80:mysql80
     volumes:
-      - gitea:/data
-      # - ./runtime/conf/gitea:/etc/gitea
+      # - gitea:/data
+      - ../conf/gitea:/etc/gitea
+      - ../data/gitea:/data
     networks:
       dockenv:
         ipv4_address: ${IP_GITEA}
