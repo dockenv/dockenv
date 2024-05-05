@@ -44,7 +44,7 @@ services:
     ports:
       - ${PHP74_PORT}:9000
     volumes:
-      - ../logs/php74:/var/log/php-fpm
+      - ../logs/php74:/var/log/php74
       - ${WORKSPACES}:/data
     networks:
       - dockenv
@@ -68,7 +68,10 @@ services:
     ports:
       - ${PHP82_PORT}:9000
     volumes:
-      - ../logs/php82:/var/log/php-fpm
+      - ../conf/php82/php.ini:/etc/php82/php.ini
+      - ../conf/php82/php-fpm.d:/etc/php82/php-fpm.d
+      - ../conf/php82/php-fpm.conf:/etc/php82/php-fpm.conf
+      - ../logs/php82:/var/log/php82
       - ${WORKSPACES}:/data
     networks:
       - dockenv

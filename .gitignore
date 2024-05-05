@@ -1,8 +1,7 @@
-
+conf/nginx/conf.d/*
 !conf/nginx/conf.d/php.conf
 
 /.env
 data/*/*
 logs/*/*
-config/*/*
 runtime
