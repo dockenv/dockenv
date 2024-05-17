@@ -6,8 +6,9 @@ services:
     restart: always
     expose:
       - 9300
+      - 9200
     environment:
-      - ELASTIC_PASSWORD=dockenv
+      - ELASTIC_PASSWORD=${DEFAULT_PASSWD}
       # 此配置会导致无法启动
       # - ENROLLMENT_TOKEN=dockenv
       - cluster.name=${NAME}
@@ -33,6 +34,7 @@ services:
     volumes:
       # - elastic:/usr/share/elasticsearch/data
       - ../data/elastic:/data
+      - ../logs/elastic:/usr/share/elasticsearch/logs
       # - ${ELASTICSEARCH_CONF_FILE}:/usr/share/elasticsearch/config/elasticsearch.yml
     ports:
       - "${ELASTIC_WEB_PORT}:9200"
@@ -50,11 +52,18 @@ services:
     hostname: logstash
     container_name: logstash
     restart: always
+    command: logstash -f ./conf/logstash-filebeat.conf
     expose:
       - 5044
+    # volumes:
+      # 映射到容器中
+      # - ./logstash/conf/logstash-filebeat.conf:/usr/share/logstash/conf/logstash-filebeat.conf
+      # - ./logstash/conf/logstash.yml:/usr/share/logstash/config/logstash.yml
     environment:
       - TZ=${TIMEZONE}
       - ELASTICSEARCH_HOSTS=["http://elastic:9200"]
+      # 解决logstash监控连接报错
+      - xpack.monitoring.elasticsearch.hosts=http://elastic:9200
     ports:
       - "${LOGSTASH_WEB_PORT}:9600"
       - "${LOGSTASH_PORT}:5044"
@@ -82,6 +91,8 @@ services:
       # - ELASTICSEARCH_HOSTS=["http://${ELASTICSEARCH_IP}:9200"]
       - ELASTICSEARCH_HOSTS=["http://elastic:9200"]
       - LS_JAVA_OPTS=-Xmx512m -Xms512m
+    # volumes:
+      # - ../conf/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
     ports:
       - "${KIBANA_PORT}:5601"
     depends_on:

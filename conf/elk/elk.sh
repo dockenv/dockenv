@@ -6,12 +6,6 @@ GREEN_COLOR="\033[32m"
 VIOLET_COLOR="\033[35m"
 RES="\033[0m"
 
-echo -e "${BLUE_COLOR}# ######################################################################${RES}"
-echo -e "${BLUE_COLOR}#                       Docker ELK Shell Script                        #${RES}"
-echo -e "${BLUE_COLOR}#                       Blog: www.voocel.com                           #${RES}"
-echo -e "${BLUE_COLOR}#                       Email: voocel@gmail.com                        #${RES}"
-echo -e "${BLUE_COLOR}# ######################################################################${RES}"
-
 if [ "$(free -g|awk '/^Mem/{print $2-$3}')" -le 4 ];then
    echo "可用内存小于4g，退出！"
    exit
