@@ -23,7 +23,7 @@ services:
     volumes:
       - ../data/minio:/data
     networks:
-      - dockenv
+      dockenv_dockenv:
     dns:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
@@ -54,7 +54,7 @@ services:
     ports:
       - ${MEILISEARCH_PORT}:7700
     networks:
-      dockenv:
+      dockenv_dockenv:
         ipv4_address: ${IP_MEILISEARCH}
     dns:
       - ${DOCKER_DNS1}
@@ -70,33 +70,27 @@ services:
       - 1883
       - 61613
     ports:
-      - "${RABBITMQ_PORT}:5672"
-      - "${RABBITMQ_MQTT_PORT}:1883"
-      - "${RABBITMQ_MQTT_WEB_PORT}:15692"
-      - "${RABBITMQ_STOMP_PORT}:61613"
-      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
+      - '${RABBITMQ_PORT}:5672'
+      - '${RABBITMQ_MQTT_PORT}:1883'
+      - '${RABBITMQ_MQTT_WEB_PORT}:15692'
+      - '${RABBITMQ_STOMP_PORT}:61613'
+      - '${RABBITMQ_MANAGEMENT_PORT}:15672'
     environment:
-      TZ: "${TIMEZONE}"
-      RABBITMQ_DEFAULT_USER: "${RABBITMQ_DEFAULT_USER}"
-      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_DEFAULT_PASS}"
-      RABBITMQ_DEFAULT_VHOST: "${RABBITMQ_DEFAULT_VHOST}"
-      RABBITMQ_NODE_IP_ADDRESS: "${IP_RMQ}"
+      TZ: '${TIMEZONE}'
+      RABBITMQ_DEFAULT_USER: '${RABBITMQ_DEFAULT_USER}'
+      RABBITMQ_DEFAULT_PASS: '${RABBITMQ_DEFAULT_PASS}'
+      RABBITMQ_DEFAULT_VHOST: '${RABBITMQ_DEFAULT_VHOST}'
+      RABBITMQ_NODE_IP_ADDRESS: '${IP_RMQ}'
     volumes:
       - ../data/rabbitmq:/var/lib/rabbitmq
       - ../logs/rabbitmq:/var/log/rabbitmq
     networks:
-      dockenv:
+      dockenv_dockenv:
         ipv4_address: ${IP_RMQ}
     dns:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
 
 networks:
-  dockenv:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: ${DOCKER_SUBNET_IP}
-          ip_range: ${DOCKER_SUBNET_RANGE}
-          gateway: ${DOCKER_SUBNET_GATEWAY}
+  dockenv_dockenv:
+    external: true

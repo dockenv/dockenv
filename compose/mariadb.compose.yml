@@ -5,9 +5,9 @@ services:
     container_name: mariadb
     restart: always
     expose:
-      - "3306"
+      - '3306'
     ports:
-      - "${MARIADB_PORT}:3306"
+      - '${MARIADB_PORT}:3306'
     volumes:
       - ../data/mariadb:/var/lib/mysql
       - ../logs/mariadb/:/var/log/mysql
@@ -20,15 +20,9 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     #only for container without host
     networks:
-      dockenv:
+      dockenv_dockenv:
         ipv4_address: ${IP_MARIADB}
 
 networks:
-  dockenv:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: ${DOCKER_SUBNET_IP}
-          ip_range: ${DOCKER_SUBNET_RANGE}
-          gateway: ${DOCKER_SUBNET_GATEWAY}
+  dockenv_dockenv:
+    external: true

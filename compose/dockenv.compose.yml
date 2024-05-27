@@ -7,17 +7,18 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1"
+          cpus: '1'
           memory: 512M
     ports:
       - ${NGINX_PORT}:80
       - ${NGINX_SSL_PORT}:443
     volumes:
-    - ../logs/nginx:/var/log/nginx
-    - ../conf/nginx/conf.d:/etc/nginx/conf.d
-    - ../conf/nginx/nginx.conf:/etc/nginx/nginx.conf
-    - ../conf/nginx/rewrite:/etc/nginx/rewrite
-    - ${WORKSPACES}:/data
+      - ../logs/nginx:/var/log/nginx
+      - ../conf/nginx/conf.d:/etc/nginx/conf.d
+      - ../conf/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ../conf/nginx/rewrite:/etc/nginx/rewrite
+      - ../conf/nginx/components:/etc/nginx/components
+      - ${WORKSPACES}:/data
     links:
       - php74:php74
       - php82:php82

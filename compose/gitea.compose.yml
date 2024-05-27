@@ -9,8 +9,8 @@ services:
       - USER_GID=1000
       # - GITEA_CUSTOM=/etc/gitea
     ports:
-      - "${GITEA_WEB_PORT}:3000"
-      - "${GITEA_SSH_PORT}:22"
+      - '${GITEA_WEB_PORT}:3000'
+      - '${GITEA_SSH_PORT}:22'
     depends_on:
       - mysql80
     links:
@@ -20,15 +20,9 @@ services:
       - ../conf/gitea:/etc/gitea
       - ../data/gitea:/data
     networks:
-      dockenv:
+      dockenv_dockenv:
         ipv4_address: ${IP_GITEA}
 
 networks:
-  dockenv:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: ${DOCKER_SUBNET_IP}
-          ip_range: ${DOCKER_SUBNET_RANGE}
-          gateway: ${DOCKER_SUBNET_GATEWAY}
+  dockenv_dockenv:
+    external: true
