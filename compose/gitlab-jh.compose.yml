@@ -10,9 +10,9 @@ services:
     environment:
       - GITLAB_ROOT_PASSWORD=${GITLAB_PASSWORD}
     ports:
-      - "2022:22"
-      - "2080:80"
-      - "2443:443"
+      - '2022:22'
+      - '2080:80'
+      - '2443:443'
     volumes:
       # - gitlabconf:/etc/gitlab
       # - gitlablogs:/var/log/gitlab
@@ -24,11 +24,5 @@ services:
       dockenv:
 
 networks:
-  dockenv:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: ${DOCKER_SUBNET_IP}
-          ip_range: ${DOCKER_SUBNET_RANGE}
-          gateway: ${DOCKER_SUBNET_GATEWAY}
+  dockenv_dockenv:
+    external: true
