@@ -20,11 +20,36 @@ services:
       - ../conf/nginx/components:/etc/nginx/components
       - ${WORKSPACES}:/data
     links:
+      - php56:php56
       - php74:php74
       - php82:php82
     networks:
       dockenv:
         ipv4_address: ${IP_NGINX}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+  php56:
+    image: ${DOCKER_REGISTRY}/php:56
+    hostname: php56
+    container_name: php56
+    restart: always
+    expose:
+      - 9000
+    depends_on:
+      - mongo
+      - mysql57
+      - mysql80
+      - redis
+      - memcached
+    ports:
+      - ${PHP56_PORT}:9000
+    volumes:
+      - ../logs/php74:/var/log/php74
+      - ${WORKSPACES}:/data
+    networks:
+      - dockenv
     dns:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
@@ -98,6 +123,14 @@ services:
       # - MYSQL_DATABASE=${MYSQL57_DATABASE}
       - MYSQL_USER=${MYSQL57_USER}
       - MYSQL_PASSWORD=${MYSQL57_PASSWORD}
+    # Bug, will killed, out of memory
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     #only for container without host
     networks:
@@ -125,6 +158,14 @@ services:
       # - MYSQL_DATABASE=${MYSQL80_DATABASE}
       - MYSQL_USER=${MYSQL80_USER}
       - MYSQL_PASSWORD=${MYSQL80_PASSWORD}
+    # Bug, will killed, out of memory
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     #only for container without host
     networks:
