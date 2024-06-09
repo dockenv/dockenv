@@ -2,9 +2,9 @@
 ###
 # @Author: Cloudflying
 # @Date: 2024-04-30 18:51:36
-# @LastEditTime: 2024-05-01 22:06:32
+# @LastEditTime: 2024-06-09 23:17:25
 # @LastEditors: Cloudflying
-# @Description:
+# @Description: Dockenv Compose
 ###
 # Docker Compose Manager
 
@@ -39,11 +39,10 @@ _pull() {
 }
 
 _service() {
-  COMPOSE_FILE="${ROOT_PATH}/compose/${2}.compose.yml"
+  COMPOSE_FILE="${ROOT_PATH}/.dev/compose/${2}.compose.yml"
   [ -z "${2}" ] && echo "error: Service is empty" && exit 1
 
   if [[ -f "${COMPOSE_FILE}" ]]; then
-    # echo "==> $1 $2"
     "_${1}" docker-compose -f "${COMPOSE_FILE}" --env-file "${ROOT_PATH}/.env" --project-name "${2}"
   else
     echo "error: Service $2 Not Found, See ./dockenv.sh -h"
@@ -55,31 +54,31 @@ _usage() {
 }
 
 case "$1" in
-start)
-  _service "$@"
-  ;;
-stop)
-  _service "$@"
-  ;;
-restart)
-  _service "$@"
-  ;;
-recreate)
-  _service "$@"
-  ;;
-remove)
-  _service "$@"
-  ;;
-ps)
-  _service "$@"
-  ;;
-pull)
-  _service "$@"
-  ;;
-"-h|--help|usage|--usage")
-  _usage
-  ;;
-*)
-  _usage
-  ;;
+  start)
+    _service "$@"
+    ;;
+  stop)
+    _service "$@"
+    ;;
+  restart)
+    _service "$@"
+    ;;
+  recreate)
+    _service "$@"
+    ;;
+  remove)
+    _service "$@"
+    ;;
+  ps)
+    _service "$@"
+    ;;
+  pull)
+    _service "$@"
+    ;;
+  "-h|--help|usage|--usage")
+    _usage
+    ;;
+  *)
+    _usage
+    ;;
 esac
