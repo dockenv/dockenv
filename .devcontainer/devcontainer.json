@@ -31,7 +31,8 @@
 				"editor.formatOnSave": false
 			},
 			"extensions": [
-				"redhat.vscode-xml"
+				"redhat.vscode-xml",
+				"TabNine.tabnine-vscode"
 			]
 		}
 	},
