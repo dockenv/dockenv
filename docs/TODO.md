@@ -1,0 +1,14 @@
+- github-cli
+- go
+- node
+- rust
+- python
+- php
+- github actions runner
+- etcd
+- exa
+- ripgrep
+- npm-package
+- gitleaks
+- redis
+- redis-stack
