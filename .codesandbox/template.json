@@ -1,7 +1,7 @@
 {
 	"title": "Dockenv",
 	"description": "The Best Way to Develop With Docker Integrated development environment.",
-	"iconUrl": "https://github.com/dockenv/dockenv/blob/main/.codesandbox/icon.png?raw=true",
+	"iconUrl": "https://raw.githubusercontent.com/dockenv/dockenv/master/.codesandbox/icon.png",
 	"tags": [
 		"docker",
 		"containers",

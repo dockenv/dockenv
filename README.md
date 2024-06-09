@@ -19,16 +19,21 @@
 
 ## Usage
 ```sh
+# Copy Env File
 cp .env-example .env
-docker-compose up -d
+# Usage:
+./dockenv.sh start `{compose}`
+# example
+./dockenv.sh start dockenv
 ```
 ## Compose
-- anmp: Alpine + Nginx/Mysql/Mariadb+Redis/Memcache/PostgreSQL/Mongo
+- dockenv: Alpine + Nginx/Mysql/Mariadb+Redis/Memcache/PostgreSQL/Mongo
 - elk: Elastic/Logstash/Kibana
 - gitea: Gitea
-- services: Minio/RabbitMQ/Meilisearch
 - gitlab-jh: Gitlab-Jihu
+- manager: Docker Manager
 - mariadb: MariaDB latest
+- services: Minio/RabbitMQ/Meilisearch
 
 ## 使用全局网络跨 compose 通信
 - name: dockenv-global
