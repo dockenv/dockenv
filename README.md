@@ -1,7 +1,7 @@
 ### Dockenv
-> 基于 `Docker` 的一站式开发环境
-
+- 基于 `Docker` 的一站式开发环境
 - Run on Github CodeSpace/Codesandbox
+- 支持使用全局网络跨 compose 通信
 
 ## 软件镜像列表
 
@@ -34,7 +34,3 @@ cp .env-example .env
 - manager: Docker Manager
 - mariadb: MariaDB latest
 - services: Minio/RabbitMQ/Meilisearch
-
-## 使用全局网络跨 compose 通信
-- name: dockenv-global
-- external: true
