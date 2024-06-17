@@ -7,7 +7,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: "1"
           memory: 512M
     ports:
       - ${NGINX_PORT}:80
@@ -78,6 +78,60 @@ services:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
 
+  php80:
+    image: ${DOCKER_REGISTRY}/php:80
+    hostname: php80
+    container_name: php80
+    restart: always
+    expose:
+      - 9000
+    depends_on:
+      - mongo
+      - mysql57
+      - mysql80
+      - redis
+      - memcached
+    ports:
+      - ${PHP80_PORT}:9000
+    volumes:
+      - ../conf/php/80/php.ini:/etc/php80/php.ini
+      - ../conf/php/80/php-fpm.d:/etc/php80/php-fpm.d
+      - ../conf/php/80/php-fpm.conf:/etc/php80/php-fpm.conf
+      - ../logs/php/80:/var/log/php80
+      - ${WORKSPACES}:/data
+    networks:
+      - dockenv
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+  php81:
+    image: ${DOCKER_REGISTRY}/php:81
+    hostname: php81
+    container_name: php81
+    restart: always
+    expose:
+      - 9000
+    depends_on:
+      - mongo
+      - mysql57
+      - mysql80
+      - redis
+      - memcached
+    ports:
+      - ${PHP81_PORT}:9000
+    volumes:
+      - ../conf/php/81/php.ini:/etc/php81/php.ini
+      - ../conf/php/81/php-fpm.d:/etc/php81/php-fpm.d
+      - ../conf/php/81/php-fpm.conf:/etc/php81/php-fpm.conf
+      - ../logs/php/81:/var/log/php81
+      - ${WORKSPACES}:/data
+    networks:
+      - dockenv
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
   php82:
     image: ${DOCKER_REGISTRY}/php:82
     hostname: php82
@@ -94,10 +148,10 @@ services:
     ports:
       - ${PHP82_PORT}:9000
     volumes:
-      - ../conf/php82/php.ini:/etc/php82/php.ini
-      - ../conf/php82/php-fpm.d:/etc/php82/php-fpm.d
-      - ../conf/php82/php-fpm.conf:/etc/php82/php-fpm.conf
-      - ../logs/php82:/var/log/php82
+      - ../conf/php/82/php.ini:/etc/php82/php.ini
+      - ../conf/php/82/php-fpm.d:/etc/php82/php-fpm.d
+      - ../conf/php/82/php-fpm.conf:/etc/php82/php-fpm.conf
+      - ../logs/php/82:/var/log/php82
       - ${WORKSPACES}:/data
     networks:
       - dockenv
