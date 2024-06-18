@@ -1,0 +1,5 @@
+run = "php main.php"
+language = "php"
+
+[debugger]
+program = "main.php"
