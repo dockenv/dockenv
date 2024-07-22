@@ -2,13 +2,17 @@
 ###
 # @Author: Cloudflying
 # @Date: 2024-04-30 18:51:36
-# @LastEditTime: 2024-06-09 23:17:25
+# @LastEditTime: 2024-07-22 11:42:01
 # @LastEditors: Cloudflying
-# @Description: Dockenv Compose
+# @Description: Dockenv Compose Manager
 ###
 # Docker Compose Manager
 
 ROOT_PATH=$(dirname "$(realpath "$0")")
+
+if [[ ! -f "${ROOT_PATH}/.env" ]]; then
+  cp -fr "${ROOT_PATH}/.env-example" "${ROOT_PATH}/.env"
+fi
 
 _start() {
   "$@" up -d
@@ -54,31 +58,31 @@ _usage() {
 }
 
 case "$1" in
-  start)
-    _service "$@"
-    ;;
-  stop)
-    _service "$@"
-    ;;
-  restart)
-    _service "$@"
-    ;;
-  recreate)
-    _service "$@"
-    ;;
-  remove)
-    _service "$@"
-    ;;
-  ps)
-    _service "$@"
-    ;;
-  pull)
-    _service "$@"
-    ;;
-  "-h|--help|usage|--usage")
-    _usage
-    ;;
-  *)
-    _usage
-    ;;
+start)
+  _service "$@"
+  ;;
+stop)
+  _service "$@"
+  ;;
+restart)
+  _service "$@"
+  ;;
+recreate)
+  _service "$@"
+  ;;
+remove)
+  _service "$@"
+  ;;
+ps)
+  _service "$@"
+  ;;
+pull)
+  _service "$@"
+  ;;
+"-h|--help|usage|--usage")
+  _usage
+  ;;
+*)
+  _usage
+  ;;
 esac
