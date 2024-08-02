@@ -19,11 +19,5 @@ services:
       dockenv:
 
 networks:
-  dockenv:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: ${DOCKER_SUBNET_IP}
-          ip_range: ${DOCKER_SUBNET_RANGE}
-          gateway: ${DOCKER_SUBNET_GATEWAY}
+  dockenv_dockenv:
+    external: true
