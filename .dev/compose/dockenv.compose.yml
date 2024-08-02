@@ -38,7 +38,6 @@ services:
     expose:
       - 9000
     depends_on:
-      - mongo
       - mysql57
       - mysql80
       - redis
@@ -62,7 +61,6 @@ services:
     expose:
       - 9000
     depends_on:
-      - mongo
       - mysql57
       - mysql80
       - redis
@@ -86,7 +84,6 @@ services:
     expose:
       - 9000
     depends_on:
-      - mongo
       - mysql57
       - mysql80
       - redis
@@ -113,7 +110,6 @@ services:
     expose:
       - 9000
     depends_on:
-      - mongo
       - mysql57
       - mysql80
       - redis
@@ -140,7 +136,6 @@ services:
     expose:
       - 9000
     depends_on:
-      - mongo
       - mysql57
       - mysql80
       - redis
@@ -152,6 +147,32 @@ services:
       - ../conf/php/82/php-fpm.d:/etc/php82/php-fpm.d
       - ../conf/php/82/php-fpm.conf:/etc/php82/php-fpm.conf
       - ../logs/php/82:/var/log/php82
+      - ${WORKSPACES}:/data
+    networks:
+      - dockenv
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+  php83:
+    image: ${DOCKER_REGISTRY}/php:83
+    hostname: php83
+    container_name: php83
+    restart: always
+    expose:
+      - 9000
+    depends_on:
+      - mysql57
+      - mysql80
+      - redis
+      - memcached
+    ports:
+      - ${PHP83_PORT}:9000
+    volumes:
+      - ../conf/php/83/php.ini:/etc/php83/php.ini
+      - ../conf/php/83/php-fpm.d:/etc/php83/php-fpm.d
+      - ../conf/php/83/php-fpm.conf:/etc/php83/php-fpm.conf
+      - ../logs/php/83:/var/log/php83
       - ${WORKSPACES}:/data
     networks:
       - dockenv
@@ -225,54 +246,6 @@ services:
     networks:
       dockenv:
         ipv4_address: ${IP_MYSQL80}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
-
-  mongo:
-    image: ${DOCKER_REGISTRY}/mongo:latest
-    hostname: mongo
-    container_name: mongo
-    restart: always
-    expose:
-      - 27017
-    ports:
-      - ${MONGO_PORT}:27017
-    volumes:
-      - ../data/mongo:/data/db
-      - ../conf/mongo:/data/configdb
-      - ../logs/mongo:/var/log/mongo
-    environment:
-      TZ: ${TIMEZONE}
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
-    # command: mongod --config /etc/mongod.conf
-    networks:
-      dockenv:
-        ipv4_address: ${IP_MONGO}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
-
-  postgres:
-    image: ${DOCKER_REGISTRY}/postgres:16
-    hostname: postgres
-    container_name: postgres
-    restart: always
-    expose:
-      - 5432
-    ports:
-      - ${POSTGRES_PORT}:5432
-    volumes:
-      - ../data/postgres:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - PGDATA=/var/lib/postgresql/data/pgdata
-    networks:
-      dockenv:
-        ipv4_address: ${IP_POSTGRES}
     dns:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
