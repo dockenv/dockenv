@@ -1,0 +1,39 @@
+services:
+  mysql80:
+    image: ${DOCKER_REGISTRY}/mysql:8.0
+    hostname: mysql80
+    container_name: mysql80
+    restart: always
+    expose:
+      - 3306
+    ports:
+      - ${MYSQL80_PORT}:3306
+    volumes:
+      - ../data/mysql80:/var/lib/mysql
+      - ../logs/mysql80:/var/log/mysql
+    environment:
+      - TZ=${TIMEZONE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL80_ROOT_PASSWORD}
+      # - MYSQL_DATABASE=${MYSQL80_DATABASE}
+      - MYSQL_USER=${MYSQL80_USER}
+      - MYSQL_PASSWORD=${MYSQL80_PASSWORD}
+    # Bug, will killed, out of memory
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    #only for container without host
+    networks:
+      dockenv:
+        ipv4_address: ${IP_MYSQL80}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+networks:
+  lnmp_dockenv:
+    external: true

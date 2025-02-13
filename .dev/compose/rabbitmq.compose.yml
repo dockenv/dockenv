@@ -1,0 +1,35 @@
+services:
+  rabbitmq:
+    image: ${DOCKER_REGISTRY}/rabbitmq:latest
+    hostname: rabbitmq
+    container_name: rabbitmq
+    restart: always
+    expose:
+      - 5672
+      - 1883
+      - 61613
+    ports:
+      - '${RABBITMQ_PORT}:5672'
+      - '${RABBITMQ_MQTT_PORT}:1883'
+      - '${RABBITMQ_MQTT_WEB_PORT}:15692'
+      - '${RABBITMQ_STOMP_PORT}:61613'
+      - '${RABBITMQ_MANAGEMENT_PORT}:15672'
+    environment:
+      TZ: '${TIMEZONE}'
+      RABBITMQ_DEFAULT_USER: '${RABBITMQ_DEFAULT_USER}'
+      RABBITMQ_DEFAULT_PASS: '${RABBITMQ_DEFAULT_PASS}'
+      RABBITMQ_DEFAULT_VHOST: '${RABBITMQ_DEFAULT_VHOST}'
+      RABBITMQ_NODE_IP_ADDRESS: '${IP_RMQ}'
+    volumes:
+      - ../data/rabbitmq:/var/lib/rabbitmq
+      - ../logs/rabbitmq:/var/log/rabbitmq
+    networks:
+      lnmp_dockenv:
+        ipv4_address: ${IP_RMQ}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+networks:
+  lnmp_dockenv:
+    external: true

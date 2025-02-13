@@ -1,0 +1,25 @@
+services:
+  php80:
+    image: ${DOCKER_REGISTRY}/php:80
+    hostname: php80
+    container_name: php80
+    restart: always
+    expose:
+      - 9000
+    ports:
+      - ${PHP80_PORT}:9000
+    volumes:
+      - ../conf/php/80/php.ini:/etc/php80/php.ini
+      - ../conf/php/80/php-fpm.d:/etc/php80/php-fpm.d
+      - ../conf/php/80/php-fpm.conf:/etc/php80/php-fpm.conf
+      - ../logs/php/80:/var/log/php80
+      - ${WORKSPACES}:/data
+    networks:
+      - dockenv
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+networks:
+  lnmp_dockenv:
+    external: true

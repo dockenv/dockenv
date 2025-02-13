@@ -20,9 +20,9 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     #only for container without host
     networks:
-      dockenv_dockenv:
+      lnmp_dockenv:
         ipv4_address: ${IP_MARIADB}
 
 networks:
-  dockenv_dockenv:
+  lnmp_dockenv:
     external: true
