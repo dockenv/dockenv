@@ -1,0 +1,20 @@
+services:
+  memcached:
+    image: ${DOCKER_REGISTRY}/memcached:latest
+    container_name: memcached
+    hostname: memcached
+    restart: always
+    expose:
+      - 11211
+    ports:
+      - ${MEMCACHED_PORT}:11211
+    networks:
+      dockenv:
+        ipv4_address: ${IP_MEMCACHED}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+networks:
+  lnmp_dockenv:
+    external: true

@@ -16,11 +16,11 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ../data/portainer:/data
     networks:
-      dockenv_dockenv:
+      lnmp_dockenv:
     dns:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
 
 networks:
-  dockenv_dockenv:
+  lnmp_dockenv:
     external: true

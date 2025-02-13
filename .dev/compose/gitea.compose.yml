@@ -20,9 +20,9 @@ services:
       - ../conf/gitea:/etc/gitea
       - ../data/gitea:/data
     networks:
-      dockenv_dockenv:
+      lnmp_dockenv:
         ipv4_address: ${IP_GITEA}
 
 networks:
-  dockenv_dockenv:
+  lnmp_dockenv:
     external: true

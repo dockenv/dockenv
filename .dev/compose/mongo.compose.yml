@@ -25,5 +25,5 @@ services:
       - ${DOCKER_DNS2}
 
 networks:
-  dockenv_dockenv:
+  lnmp_dockenv:
     external: true

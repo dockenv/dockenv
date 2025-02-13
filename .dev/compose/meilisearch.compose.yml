@@ -1,0 +1,36 @@
+services:
+  # https://www.meilisearch.com/docs/learn/configuration/instance_options
+  # https://raw.githubusercontent.com/meilisearch/meilisearch/latest/config.toml
+  meilisearch:
+    image: ${DOCKER_REGISTRY}/meilisearch:latest
+    hostname: meilisearch
+    container_name: meilisearch
+    restart: always
+    expose:
+      - 7700
+    volumes:
+      - ../data/meilisearch:/data
+    environment:
+      # - MEILI_HTTP_ADDR=${IP_MEILISEARCH}:${MEILISEARCH_PORT}
+      # - CONFIG_FILE_PATH=path/to/config.toml
+      - MEILI_DB_PATH=/data/meilisearch
+      # - MEILI_DUMP_DIR=dumps/
+      - MEILI_MASTER_KEY=${DEFAULT_PASSWD}
+      - MEILI_ENV=development # development OR production
+      - MEILI_HTTP_PAYLOAD_SIZE_LIMIT=1073741824 # Gb Mb 1G
+      - MEILI_MAX_INDEXING_MEMORY=1073741824 # Gb Mb 1G
+      - MEILI_LOG_LEVEL=INFO # OFF, ERROR, WARN, INFO, DEBUG, TRACE
+      - MEILI_SCHEDULE_SNAPSHOT=3600
+      - MEILI_SNAPSHOT_DIR=/data/snapshot
+    ports:
+      - ${MEILISEARCH_PORT}:7700
+    networks:
+      lnmp_dockenv:
+        ipv4_address: ${IP_MEILISEARCH}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+networks:
+  lnmp_dockenv:
+    external: true
