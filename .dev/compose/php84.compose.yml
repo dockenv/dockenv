@@ -17,7 +17,8 @@ services:
     # links:
       # - redis:redis
     networks:
-      - lnmp_dockenv
+      dockenv:
+        ipv4_address: ${IP_PHP84}
     dns:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}

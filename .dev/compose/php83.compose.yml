@@ -15,7 +15,8 @@ services:
       - ../logs/php/83:/var/log/php83
       - ${WORKSPACES}:/data
     networks:
-      - dockenv
+      dockenv:
+        ipv4_address: ${IP_PHP83}
     dns:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
