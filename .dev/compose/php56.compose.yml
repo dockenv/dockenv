@@ -12,7 +12,8 @@ services:
       - ../logs/php74:/var/log/php74
       - ${WORKSPACES}:/data
     networks:
-      - dockenv
+      dockenv:
+        ipv4_address: ${IP_PHP56}
     dns:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
