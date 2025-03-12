@@ -19,5 +19,5 @@ services:
       dockenv:
 
 networks:
-  lnmp_dockenv:
+  dockenv_dockenv:
     external: true

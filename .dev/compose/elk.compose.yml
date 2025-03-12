@@ -40,7 +40,7 @@ services:
       - '${ELASTIC_WEB_PORT}:9200'
       - '${ELASTIC_PORT}:9300'
     networks:
-      lnmp_dockenv:
+      dockenv_dockenv:
         ipv4_address: ${IP_ELASTICSEARCH}
     dns:
       - ${DOCKER_DNS1}
@@ -72,7 +72,7 @@ services:
     links:
       - elastic:elasticsearch
     networks:
-      lnmp_dockenv:
+      dockenv_dockenv:
         ipv4_address: ${IP_LOGSTASH}
     dns:
       - ${DOCKER_DNS1}
@@ -100,12 +100,12 @@ services:
     links:
       - elastic:elastic
     networks:
-      lnmp_dockenv:
+      dockenv_dockenv:
         ipv4_address: ${IP_KIBANA}
     dns:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
 
 networks:
-  lnmp_dockenv:
+  dockenv_dockenv:
     external: true
