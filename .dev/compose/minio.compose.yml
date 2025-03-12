@@ -23,11 +23,11 @@ services:
     volumes:
       - ../data/minio:/data
     networks:
-      lnmp_dockenv:
+      dockenv_dockenv:
     dns:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
 
 networks:
-  lnmp_dockenv:
+  dockenv_dockenv:
     external: true

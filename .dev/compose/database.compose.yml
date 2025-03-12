@@ -1,0 +1,99 @@
+services:
+
+  mariadb:
+    image: ${DOCKER_REGISTRY}/mariadb:latest
+    hostname: mariadb
+    container_name: mariadb
+    restart: always
+    expose:
+      - '3306'
+    ports:
+      - '${MARIADB_PORT}:3306'
+    volumes:
+      - ../data/mariadb:/var/lib/mysql
+      - ../logs/mariadb/:/var/log/mysql
+    environment:
+      - TZ=${TIMEZONE}
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    #only for container without host
+    networks:
+      dockenv_dockenv:
+        ipv4_address: ${IP_MARIADB}
+
+  dragonflydb:
+    image: ${DOCKER_REGISTRY}/dragonflydb:latest
+    hostname: dragonflydb
+    container_name: dragonflydb
+    restart: always
+    ulimits:
+      memlock: -1
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+    ports:
+      - "${DRAGONFLYDB_PORT}:6379"
+    volumes:
+      - dragonflydb:/data
+    # For better performance, consider `host` mode instead `port` to avoid docker NAT.
+    # `host` mode is NOT currently supported in Swarm Mode.
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#network_mode
+    # network_mode: "host"
+    networks:
+      dockenv_dockenv:
+        ipv4_address: ${IP_DRAGONFLYDB}
+
+  mongo:
+    image: ${DOCKER_REGISTRY}/mongo:latest
+    hostname: mongo
+    container_name: mongo
+    restart: always
+    expose:
+      - 27017
+    ports:
+      - ${MONGO_PORT}:27017
+    volumes:
+      - ../data/mongo:/data/db
+      - ../conf/mongo:/data/configdb
+      - ../logs/mongo:/var/log/mongo
+    environment:
+      TZ: ${TIMEZONE}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    # command: mongod --config /etc/mongod.conf
+    networks:
+      dockenv:
+        ipv4_address: ${IP_MONGO}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+  postgres:
+    image: ${DOCKER_REGISTRY}/postgres:16
+    hostname: postgres
+    container_name: postgres
+    restart: always
+    expose:
+      - 5432
+    ports:
+      - ${POSTGRES_PORT}:5432
+    volumes:
+      - ../data/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    networks:
+      dockenv:
+        ipv4_address: ${IP_POSTGRES}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+networks:
+  dockenv_dockenv:
+    external: true
