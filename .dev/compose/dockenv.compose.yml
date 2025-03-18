@@ -251,6 +251,52 @@ services:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
 
+  postgres16:
+    image: ${DOCKER_REGISTRY}/postgres:16
+    hostname: postgres16
+    container_name: postgres16
+    restart: always
+    expose:
+      - 5432
+    ports:
+      - ${POSTGRES16_PORT}:5432
+    volumes:
+      - ../data/postgres16:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    networks:
+      dockenv:
+        ipv4_address: ${IP_POSTGRES16}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+  postgres17:
+    image: ${DOCKER_REGISTRY}/postgres:17
+    hostname: postgres17
+    container_name: postgres17
+    restart: always
+    expose:
+      - 5432
+    ports:
+      - ${POSTGRES17_PORT}:5432
+    volumes:
+      - ../data/postgres17:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    networks:
+      dockenv:
+        ipv4_address: ${IP_POSTGRES17}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
   redis:
     image: ${DOCKER_REGISTRY}/redis:latest
     container_name: redis
