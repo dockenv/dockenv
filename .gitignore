@@ -2,10 +2,8 @@
 !.dev/conf/nginx/conf.d/.gitkeep
 !.dev/conf/nginx/conf.d/php.conf
 
-/.env
 .dev/data/*/*
+!.dev/data/*/.gitkeep
 .dev/logs/*/*
-runtime
 
-/data/*/*
-/logs/*/*
+.env
