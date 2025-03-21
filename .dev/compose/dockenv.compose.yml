@@ -285,10 +285,16 @@ services:
       - ${POSTGRES17_PORT}:5432
     volumes:
       - ../data/postgres17:/var/lib/postgresql/data
+      - type: tmpfs
+        target: /dev/shm
+        tmpfs:
+          size: 134217728 # 128*2^20 bytes = 128Mb
     environment:
+      - TZ="Asia/Shanghai"
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      # - POSTGRES_HOST_AUTH_METHOD=trust
       - PGDATA=/var/lib/postgresql/data/pgdata
     networks:
       dockenv:
