@@ -7,3 +7,4 @@
 .dev/logs/*/*
 
 .env
+.qodo
