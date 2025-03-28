@@ -21,6 +21,7 @@ services:
       - ${WORKSPACES}:/data
     links:
       - php82:php82
+      - php74:php74
     networks:
       dockenv:
         ipv4_address: ${IP_NGINX}
