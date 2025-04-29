@@ -328,6 +328,24 @@ services:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
 
+  valkey:
+    image: ${DOCKER_REGISTRY}/valkey:latest
+    hostname: valkey
+    container_name: valkey
+    restart: always
+    expose:
+      - 6379
+    ports:
+      - 6379:6379
+    command: valkey-server /etc/valkey/valkey.conf --save 60 1 --loglevel warning
+    volumes:
+      - ../conf/valkey/valkey.conf:/etc/valkey/valkey.conf
+    networks:
+      dockenv_dockenv:
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
   # https://www.meilisearch.com/docs/learn/configuration/instance_options
   # https://raw.githubusercontent.com/meilisearch/meilisearch/latest/config.toml
   meilisearch:
@@ -343,14 +361,14 @@ services:
       # - MEILI_HTTP_ADDR=${IP_MEILISEARCH}:${MEILISEARCH_PORT}
       # - CONFIG_FILE_PATH=path/to/config.toml
       - MEILI_DB_PATH=/data/meilisearch
-      # - MEILI_DUMP_DIR=dumps/
-      - MEILI_MASTER_KEY=${DEFAULT_PASSWD}
+      - MEILI_DUMP_DIR=/data/dumps/
+      - MEILI_SNAPSHOT_DIR=/data/snapshot
       - MEILI_ENV=development # development OR production
+      - MEILI_MASTER_KEY=${DEFAULT_PASSWD}
       - MEILI_HTTP_PAYLOAD_SIZE_LIMIT=1073741824 # Gb Mb 1G
       - MEILI_MAX_INDEXING_MEMORY=1073741824 # Gb Mb 1G
       - MEILI_LOG_LEVEL=INFO # OFF, ERROR, WARN, INFO, DEBUG, TRACE
       - MEILI_SCHEDULE_SNAPSHOT=3600
-      - MEILI_SNAPSHOT_DIR=/data/snapshot
     ports:
       - ${MEILISEARCH_PORT}:7700
     networks:
@@ -625,6 +643,28 @@ services:
     networks:
       dockenv:
         ipv4_address: ${IP_MONGO8}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+  portainer:
+    image: portainer/portainer-ee:latest
+    hostname: portainer
+    container_name: portainer
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+    ports:
+      - 8000:8000
+      - 9443:9443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../data/portainer:/data
+    networks:
+      dockenv_dockenv:
     dns:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
