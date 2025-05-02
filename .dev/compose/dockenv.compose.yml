@@ -174,7 +174,7 @@ services:
       - ../logs/php/84:/var/log/php84
       - ${WORKSPACES}:/data
     # links:
-      # - redis:redis
+    # - redis:redis
     networks:
       dockenv:
         ipv4_address: ${IP_PHP84}
@@ -404,17 +404,17 @@ services:
       - 1883
       - 61613
     ports:
-      - '${RABBITMQ_PORT}:5672'
-      - '${RABBITMQ_MQTT_PORT}:1883'
-      - '${RABBITMQ_MQTT_WEB_PORT}:15692'
-      - '${RABBITMQ_STOMP_PORT}:61613'
-      - '${RABBITMQ_MANAGEMENT_PORT}:15672'
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_MQTT_PORT}:1883"
+      - "${RABBITMQ_MQTT_WEB_PORT}:15692"
+      - "${RABBITMQ_STOMP_PORT}:61613"
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
     environment:
-      TZ: '${TIMEZONE}'
-      RABBITMQ_DEFAULT_USER: '${RABBITMQ_DEFAULT_USER}'
-      RABBITMQ_DEFAULT_PASS: '${RABBITMQ_DEFAULT_PASS}'
-      RABBITMQ_DEFAULT_VHOST: '${RABBITMQ_DEFAULT_VHOST}'
-      RABBITMQ_NODE_IP_ADDRESS: '${IP_RMQ}'
+      TZ: "${TIMEZONE}"
+      RABBITMQ_DEFAULT_USER: "${RABBITMQ_DEFAULT_USER}"
+      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_DEFAULT_PASS}"
+      RABBITMQ_DEFAULT_VHOST: "${RABBITMQ_DEFAULT_VHOST}"
+      RABBITMQ_NODE_IP_ADDRESS: "${IP_RMQ}"
     volumes:
       - ../data/rabbitmq:/var/lib/rabbitmq
       - ../logs/rabbitmq:/var/log/rabbitmq
@@ -458,9 +458,9 @@ services:
     container_name: mariadb106
     restart: always
     expose:
-      - '3306'
+      - "3306"
     ports:
-      - '${MARIADB106_PORT}:3306'
+      - "${MARIADB106_PORT}:3306"
     volumes:
       - ../data/mariadb106:/var/lib/mysql
       - ../logs/mariadb106/:/var/log/mysql
@@ -482,9 +482,9 @@ services:
     container_name: mariadb1011
     restart: always
     expose:
-      - '3306'
+      - "3306"
     ports:
-      - '${MARIADB1011_PORT}:3306'
+      - "${MARIADB1011_PORT}:3306"
     volumes:
       - ../data/mariadb1011:/var/lib/mysql
       - ../logs/mariadb1011/:/var/log/mysql
@@ -506,9 +506,9 @@ services:
     container_name: mariadb116
     restart: always
     expose:
-      - '3306'
+      - "3306"
     ports:
-      - '${MARIADB116_PORT}:3306'
+      - "${MARIADB116_PORT}:3306"
     volumes:
       - ../data/mariadb116:/var/lib/mysql
       - ../logs/mariadb116/:/var/log/mysql
@@ -530,9 +530,9 @@ services:
     container_name: mariadb117
     restart: always
     expose:
-      - '3306'
+      - "3306"
     ports:
-      - '${MARIADB117_PORT}:3306'
+      - "${MARIADB117_PORT}:3306"
     volumes:
       - ../data/mariadb117:/var/lib/mysql
       - ../logs/mariadb117/:/var/log/mysql
@@ -554,9 +554,9 @@ services:
     container_name: mariadb118
     restart: always
     expose:
-      - '3306'
+      - "3306"
     ports:
-      - '${MARIADB118_PORT}:3306'
+      - "${MARIADB118_PORT}:3306"
     volumes:
       - ../data/mariadb118:/var/lib/mysql
       - ../logs/mariadb118/:/var/log/mysql
@@ -655,7 +655,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: "1"
           memory: 512M
     ports:
       - 8000:8000
