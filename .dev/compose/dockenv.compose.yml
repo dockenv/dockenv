@@ -341,7 +341,7 @@ services:
     volumes:
       - ../conf/valkey/valkey.conf:/etc/valkey/valkey.conf
     networks:
-      dockenv_dockenv:
+      dockenv:
     dns:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
@@ -664,7 +664,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ../data/portainer:/data
     networks:
-      dockenv_dockenv:
+      dockenv:
     dns:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
