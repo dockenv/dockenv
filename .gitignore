@@ -5,6 +5,7 @@
 .dev/data/*/*
 !.dev/data/*/.gitkeep
 .dev/logs/*/*
+!.dev/logs/*/.gitkeep
 
 .env
 .qodo
