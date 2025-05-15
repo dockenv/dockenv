@@ -192,6 +192,7 @@ services:
     ports:
       - ${MYSQL57_PORT}:3306
     volumes:
+      # - ../conf/mysql57:/etc/mysql
       - ../data/mysql57:/var/lib/mysql
       - ../logs/mysql57:/var/log/mysql
     environment:
@@ -227,6 +228,7 @@ services:
     ports:
       - ${MYSQL80_PORT}:3306
     volumes:
+      # - ../conf/mysql80/my.cnf:/etc/my.cnf
       - ../data/mysql80:/var/lib/mysql
       - ../logs/mysql80:/var/log/mysql
     environment:
@@ -248,6 +250,78 @@ services:
     networks:
       dockenv:
         ipv4_address: ${IP_MYSQL80}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+  mysql84:
+    image: ${DOCKER_REGISTRY}/mysql:8.4
+    hostname: mysql84
+    container_name: mysql84
+    restart: always
+    expose:
+      - 3306
+    ports:
+      - ${MYSQL84_PORT}:3306
+    volumes:
+      # - ../conf/mysql84/my.cnf:/etc/my.cnf
+      - ../data/mysql84:/var/lib/mysql
+      - ../logs/mysql84:/var/log/mysql
+    environment:
+      - TZ=${TIMEZONE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL84_ROOT_PASSWORD}
+      # - MYSQL_DATABASE=${MYSQL84_DATABASE}
+      - MYSQL_USER=${MYSQL84_USER}
+      - MYSQL_PASSWORD=${MYSQL84_PASSWORD}
+    # Bug, will killed, out of memory
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    #only for container without host
+    networks:
+      dockenv:
+        ipv4_address: ${IP_MYSQL84}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+  mysql93:
+    image: ${DOCKER_REGISTRY}/mysql:9.3
+    hostname: mysql93
+    container_name: mysql93
+    restart: always
+    expose:
+      - 3306
+    ports:
+      - ${MYSQL93_PORT}:3306
+    volumes:
+      # - ../conf/mysql93/my.cnf:/etc/my.cnf
+      - ../data/mysql93:/var/lib/mysql
+      - ../logs/mysql93:/var/log/mysql
+    environment:
+      - TZ=${TIMEZONE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL93_ROOT_PASSWORD}
+      # - MYSQL_DATABASE=${MYSQL93_DATABASE}
+      - MYSQL_USER=${MYSQL93_USER}
+      - MYSQL_PASSWORD=${MYSQL93_PASSWORD}
+    # Bug, will killed, out of memory
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    #only for container without host
+    networks:
+      dockenv:
+        ipv4_address: ${IP_MYSQL93}
     dns:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
