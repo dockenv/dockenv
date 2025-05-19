@@ -192,7 +192,7 @@ services:
     ports:
       - ${MYSQL57_PORT}:3306
     volumes:
-      # - ../conf/mysql57:/etc/mysql
+      - ../conf/mysql57:/etc/mysql
       - ../data/mysql57:/var/lib/mysql
       - ../logs/mysql57:/var/log/mysql
     environment:
@@ -209,7 +209,7 @@ services:
       nofile:
         soft: 65536
         hard: 65536
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    command: --skip-ssl
     #only for container without host
     networks:
       dockenv:
