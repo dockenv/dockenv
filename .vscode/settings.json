@@ -2,7 +2,6 @@
   "update.mode": "start",
   "window.commandCenter": false,
   "workbench.editorLargeFileConfirmation": 4096,
-  "workbench.colorTheme": "Monokai",
   "workbench.iconTheme": "material-icon-theme",
   "workbench.editor.enablePreviewFromCodeNavigation": true,
   "workbench.editor.enablePreviewFromQuickOpen": true,

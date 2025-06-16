@@ -1,0 +1,48 @@
+services:
+  # Object Storage Service(Compatible With Amazon S3 Protocol)
+  adgh:
+    image: ${DOCKER_REGISTRY}/adguard:adgh
+    hostname: adgh
+    container_name: adgh
+    restart: always
+    expose:
+      - 53
+      - 67
+      - 68
+      - 80
+      - 443
+      - 853
+      - 3000
+      - 5443
+      - 6000
+    ports:
+      - 53:53/tcp
+      - 53:53/udp
+      - 67:67/tcp
+      - 67:57/udp
+      - 68:68/tcp
+      - 68:68/udp
+      - 8081:80/tcp
+      - 4443:443/tcp
+      - 4443:443/udp
+      - 853:853/tcp
+      - 853:853/udp
+      - 3000:3000/tcp
+      - 3000:3000/udp
+      - 5443:5443/tcp
+      - 5443:5443/udp
+      - 6000:6000/tcp
+    command: "--no-check-update -c /etc/adguardhome/AdGuardHome.yaml -w /opt/adguardhome/work"
+    volumes:
+      - ../conf/adgh:/etc/adguardhome
+      - ../data/adgh:/opt/adguardhome/work
+    networks:
+      dockenv_dockenv:
+        ipv4_address: ${IP_ADGH}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+networks:
+  dockenv_dockenv:
+    external: true
