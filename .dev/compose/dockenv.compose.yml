@@ -20,8 +20,10 @@ services:
       - ../conf/nginx/components:/etc/nginx/components
       - ${WORKSPACES}:/data
     links:
-      - php82:php82
       - php74:php74
+      - php82:php82
+      - php83:php83
+      - php84:php84
     networks:
       dockenv:
         ipv4_address: ${IP_NGINX}
@@ -53,6 +55,7 @@ services:
     hostname: php74
     container_name: php74
     restart: always
+    privileged: true
     expose:
       - 9000
     ports:
@@ -72,6 +75,7 @@ services:
     hostname: php80
     container_name: php80
     restart: always
+    privileged: true
     expose:
       - 9000
     ports:
@@ -94,6 +98,7 @@ services:
     hostname: php81
     container_name: php81
     restart: always
+    privileged: true
     expose:
       - 9000
     ports:
@@ -116,10 +121,12 @@ services:
     hostname: php82
     container_name: php82
     restart: always
+    privileged: true
     expose:
       - 9000
     depends_on:
       - mysql57
+      - mysql84
       - redis
     ports:
       - ${PHP82_PORT}:9000
@@ -141,6 +148,7 @@ services:
     hostname: php83
     container_name: php83
     restart: always
+    privileged: true
     expose:
       - 9000
     ports:
@@ -163,6 +171,7 @@ services:
     hostname: php84
     container_name: php84
     restart: always
+    privileged: true
     expose:
       - 9000
     ports:
