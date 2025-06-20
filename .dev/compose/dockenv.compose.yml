@@ -19,11 +19,6 @@ services:
       - ../conf/nginx/rewrite:/etc/nginx/rewrite
       - ../conf/nginx/components:/etc/nginx/components
       - ${WORKSPACES}:/data
-    links:
-      - php74:php74
-      - php82:php82
-      - php83:php83
-      - php84:php84
     networks:
       dockenv:
         ipv4_address: ${IP_NGINX}
@@ -124,10 +119,6 @@ services:
     privileged: true
     expose:
       - 9000
-    depends_on:
-      - mysql57
-      - mysql84
-      - redis
     ports:
       - ${PHP82_PORT}:9000
     volumes:
@@ -182,8 +173,6 @@ services:
       - ../conf/php/84/php-fpm.conf:/etc/php84/php-fpm.conf
       - ../logs/php/84:/var/log/php84
       - ${WORKSPACES}:/data
-    # links:
-    # - redis:redis
     networks:
       dockenv:
         ipv4_address: ${IP_PHP84}
