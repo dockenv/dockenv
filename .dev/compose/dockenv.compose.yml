@@ -14,6 +14,8 @@ services:
       - redis
     ports:
       - ${PHP83_PORT}:9000
+      - 9500:9500
+      - 9501:9501
     volumes:
       - ../conf/php/${LARAVEL_PHP_VERSION}/php.ini:/etc/php${LARAVEL_PHP_VERSION}/php.ini
       - ../conf/php/${LARAVEL_PHP_VERSION}/php-fpm.d:/etc/php${LARAVEL_PHP_VERSION}/php-fpm.d
