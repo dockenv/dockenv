@@ -2,8 +2,8 @@ services:
 
   php:
     image: ${DOCKER_REGISTRY}/php:${LARAVEL_PHP_VERSION}
-    hostname: laravel
-    container_name: laravel
+    hostname: php
+    container_name: php
     restart: always
     privileged: true
     expose:
