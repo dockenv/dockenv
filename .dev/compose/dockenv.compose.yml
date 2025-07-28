@@ -13,7 +13,9 @@ services:
       - mysql84
       - redis
     ports:
-      - 9000-9999:9000-9999
+      - 7878:7878
+      - 9500:9500
+      - 9501:9501
     volumes:
       - ../conf/php/${LARAVEL_PHP_VERSION}/php.ini:/etc/php${LARAVEL_PHP_VERSION}/php.ini
       - ../conf/php/${LARAVEL_PHP_VERSION}/php-fpm.d:/etc/php${LARAVEL_PHP_VERSION}/php-fpm.d
