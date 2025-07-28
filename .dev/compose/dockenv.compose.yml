@@ -12,6 +12,7 @@ services:
       - nginx
       - mysql84
       - redis
+      - storage
     ports:
       - 7878:7878
       - 9500:9500
@@ -744,6 +745,33 @@ services:
     networks:
       dockenv:
         ipv4_address: ${IP_MONGO8}
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+  # RustFS Object Storage Service(Compatible With Amazon S3 Protocol)
+  storage:
+    image: ${DOCKER_REGISTRY}/rustfs:latest
+    hostname: storage
+    container_name: storage
+    restart: always
+    environment:
+      - TZ=${TIMEZONE}
+      - RUSTFS_ACCESS_KEY=dockenv
+      - RUSTFS_SECRET_KEY=dockpass
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+    ports:
+      - 9000:9000
+    volumes:
+      - ../conf/rustfs/config.yaml:/etc/rustfs/config.toml
+      - ../data/storage:/data
+      - ../logs/storage:/logs
+    networks:
+      dockenv:
     dns:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
