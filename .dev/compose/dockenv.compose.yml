@@ -6,13 +6,20 @@ services:
     container_name: php
     restart: always
     privileged: true
-    expose:
-      - 9000
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
     depends_on:
       - nginx
       - mysql84
       - redis
       - storage
+    expose:
+      - 9000
     ports:
       - 7878:7878
       - 9500:9500
@@ -770,6 +777,39 @@ services:
       - ../conf/rustfs/config.yaml:/etc/rustfs/config.toml
       - ../data/storage:/data
       - ../logs/storage:/logs
+    networks:
+      dockenv:
+    dns:
+      - ${DOCKER_DNS1}
+      - ${DOCKER_DNS2}
+
+  grafana:
+    image: grafana/grafana-enterprise:latest
+    hostname: grafana
+    container_name: grafana
+    restart: always
+    environment:
+      - TZ=${TIMEZONE}
+      - GF_DEFAULT_INSTANCE_NAME=grafana
+      - GF_PATHS_CONFIG=/usr/share/grafana/conf/config.ini
+      - GF_PATHS_DATA=/var/lib/grafana
+      - GF_PATHS_LOGS=/var/log/grafana
+      - GF_LOG_LEVEL=debug
+      - GF_SECURITY_ADMIN_USER=dockenv
+      - GF_SECURITY_ADMIN_PASSWORD=dockpass
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+    expose:
+      - 3000
+    ports:
+      - 3000:3000
+    volumes:
+      - ../conf/grafana/config.ini:/usr/share/grafana/conf/config.ini
+      - ../data/grafana:/var/lib/grafana
+      - ../logs/grafana:/var/log/grafana
     networks:
       dockenv:
     dns:
