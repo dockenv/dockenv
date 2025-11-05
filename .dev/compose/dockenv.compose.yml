@@ -1,34 +1,4 @@
 services:
-
-  php:
-    image: ${DOCKER_REGISTRY}/php:${LARAVEL_PHP_VERSION}
-    hostname: php
-    container_name: php
-    restart: always
-    privileged: true
-    expose:
-      - 9000
-    depends_on:
-      - nginx
-      - mysql84
-      - redis
-      - storage
-    ports:
-      - 7878:7878
-      - 9500:9500
-      - 9501:9501
-    volumes:
-      - ../conf/php/${LARAVEL_PHP_VERSION}/php.ini:/etc/php${LARAVEL_PHP_VERSION}/php.ini
-      - ../conf/php/${LARAVEL_PHP_VERSION}/php-fpm.d:/etc/php${LARAVEL_PHP_VERSION}/php-fpm.d
-      - ../conf/php/${LARAVEL_PHP_VERSION}/php-fpm.conf:/etc/php${LARAVEL_PHP_VERSION}/php-fpm.conf
-      - ../logs/php/${LARAVEL_PHP_VERSION}:/var/log/php${LARAVEL_PHP_VERSION}
-      - ${WORKSPACES}:/data
-    networks:
-      - dockenv
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
-
   nginx:
     image: ${DOCKER_REGISTRY}/nginx:latest
     hostname: nginx
