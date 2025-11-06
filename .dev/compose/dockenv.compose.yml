@@ -486,13 +486,13 @@ services:
       RABBITMQ_DEFAULT_USER: "${RABBITMQ_DEFAULT_USER}"
       RABBITMQ_DEFAULT_PASS: "${RABBITMQ_DEFAULT_PASS}"
       RABBITMQ_DEFAULT_VHOST: "${RABBITMQ_DEFAULT_VHOST}"
-      RABBITMQ_NODE_IP_ADDRESS: "${IP_RMQ}"
+      RABBITMQ_NODE_IP_ADDRESS: "${IP_RABBITMQ}"
     volumes:
       - ../data/rabbitmq:/var/lib/rabbitmq
       - ../logs/rabbitmq:/var/log/rabbitmq
     networks:
       dockenv:
-        ipv4_address: ${IP_RMQ}
+        ipv4_address: ${IP_RABBITMQ}
     dns:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
