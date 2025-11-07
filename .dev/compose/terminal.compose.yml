@@ -1,0 +1,34 @@
+services:
+  guacd:
+    container_name: guacd
+    image: registry.cn-beijing.aliyuncs.com/dushixiang/guacd:latest
+    volumes:
+      - ./data:/usr/local/next-terminal/data
+    restart: always
+
+  postgresql:
+    container_name: postgresql
+    image: registry.cn-beijing.aliyuncs.com/dushixiang/postgres:16.4
+    environment:
+      POSTGRES_DB: next-terminal
+      POSTGRES_USER: next-terminal
+      POSTGRES_PASSWORD: next-terminal
+    volumes:
+      - ./data/postgresql:/var/lib/postgresql/data
+    restart: always
+
+  next-terminal:
+    container_name: next-terminal
+    image: registry.cn-beijing.aliyuncs.com/dushixiang/next-terminal:latest
+    ports:
+      - "8088:8088" # Web管理界面
+      - "2022:2022" # SSH Server 端口 (可选)
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./data:/usr/local/next-terminal/data
+      - ./logs:/usr/local/next-terminal/logs
+      - ./config.yaml:/etc/next-terminal/config.yaml
+    depends_on:
+      - postgresql
+      - guacd
+    restart: alway
