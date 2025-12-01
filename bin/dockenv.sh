@@ -2,7 +2,7 @@
 ###
 # @Author: Cloudflying
 # @Date: 2025-04-26 21:26:34
-# @LastEditTime: 2025-12-02 00:05:07
+# @LastEditTime: 2025-12-02 00:10:24
 # @LastEditors: Cloudflying
 # @Description: Dockenv is a tool to manage docker environment variables.
 ###
@@ -95,17 +95,12 @@ _error()
 
 _compose()
 {
-  if [[ -d "${ROOT_PATH}/.dev/compose" ]]; then
-    DOCKER_COMPOSE_PATH="${ROOT_PATH}/.dev/compose"
-  else
-    echo "No docker compose file found."
-    exit 1
-  fi
+  echo "${ROOT_PATH}/.dev/compose/${1}.compose.yml"
 
-  if [[ -f "${DOCKER_COMPOSE_PATH}/.dev/compose/${1}.compose.yml" ]]; then
-    DOCKER_COMPOSE_FILE="${DOCKER_COMPOSE_PATH}/.dev/compose/${1}.compose.yml"
+  if [[ -f "${ROOT_PATH}/.dev/compose/${1}.compose.yml" ]]; then
+    DOCKER_COMPOSE_FILE="${ROOT_PATH}/.dev/compose/${1}.compose.yml"
   else
-    echo "{$1} docker compose file found."
+    echo "${1} docker compose file found."
   fi
 
   _compose_bin --env-file .env --progress=tty --project-name=${1} -f ${DOCKER_COMPOSE_FILE} "${@:2}"
