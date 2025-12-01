@@ -2,7 +2,7 @@
 ###
 # @Author: Cloudflying
 # @Date: 2025-04-26 21:26:34
-# @LastEditTime: 2025-12-01 23:56:46
+# @LastEditTime: 2025-12-02 00:05:07
 # @LastEditors: Cloudflying
 # @Description: Dockenv is a tool to manage docker environment variables.
 ###
@@ -11,7 +11,8 @@ START_TIME=$(date +%s)
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 
-ROOT_PATH=$(dirname "$(realpath "$0")")
+ROOT_PATH=$(dirname $(dirname $(readlink -f "${BASH_SOURCE[0]}")))
+
 DOCKER_IMAGES_PATH="images"
 
 if [[ -n "$(command -v docker)" ]]; then
@@ -37,8 +38,6 @@ else
   echo "No .env file found."
   exit 1
 fi
-
-DOCKER_COMPOSE_PATH="${DOCKER_COMPOSE_PATH:-$HOME/Code/Project/dockenv}"
 
 if [ -z "$DOCKER_REGISTRY" ]; then
   echo "DOCKER_REGISTRY is not set."
@@ -98,9 +97,6 @@ _compose()
 {
   if [[ -d "${ROOT_PATH}/.dev/compose" ]]; then
     DOCKER_COMPOSE_PATH="${ROOT_PATH}/.dev/compose"
-  elif [[ -d ${DOCKER_COMPOSE_PATH} ]]; then
-    # shellcheck disable=SC2269
-    DOCKER_COMPOSE_PATH="${DOCKER_COMPOSE_PATH}"
   else
     echo "No docker compose file found."
     exit 1
@@ -108,6 +104,8 @@ _compose()
 
   if [[ -f "${DOCKER_COMPOSE_PATH}/.dev/compose/${1}.compose.yml" ]]; then
     DOCKER_COMPOSE_FILE="${DOCKER_COMPOSE_PATH}/.dev/compose/${1}.compose.yml"
+  else
+    echo "{$1} docker compose file found."
   fi
 
   _compose_bin --env-file .env --progress=tty --project-name=${1} -f ${DOCKER_COMPOSE_FILE} "${@:2}"
