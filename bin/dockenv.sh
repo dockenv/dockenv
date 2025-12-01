@@ -2,8 +2,8 @@
 ###
 # @Author: Cloudflying
 # @Date: 2025-04-26 21:26:34
-# @LastEditTime: 2025-12-02 00:10:24
-# @LastEditors: Cloudflying
+ # @LastEditTime: 2025-12-02 00:12:34
+ # @LastEditors: Cloudflying
 # @Description: Dockenv is a tool to manage docker environment variables.
 ###
 START_TIME=$(date +%s)
@@ -95,7 +95,6 @@ _error()
 
 _compose()
 {
-  echo "${ROOT_PATH}/.dev/compose/${1}.compose.yml"
 
   if [[ -f "${ROOT_PATH}/.dev/compose/${1}.compose.yml" ]]; then
     DOCKER_COMPOSE_FILE="${ROOT_PATH}/.dev/compose/${1}.compose.yml"
