@@ -2,7 +2,7 @@
 ###
 # @Author: Cloudflying
 # @Date: 2025-04-26 21:26:34
-# @LastEditTime: 2025-12-01 23:54:42
+# @LastEditTime: 2025-12-01 23:56:46
 # @LastEditors: Cloudflying
 # @Description: Dockenv is a tool to manage docker environment variables.
 ###
@@ -47,7 +47,7 @@ fi
 
 _compose_bin()
 {
-  if [[ -n "$(docker-compose)" ]]; then
+  if [[ -n "$(command -v docker-compose)" ]]; then
     docker-compose "${@}"
   elif [[ -n "$(docker compose)" ]]; then
     docker compose "${@}"
