@@ -2,7 +2,7 @@
 ###
 # @Author: Cloudflying
 # @Date: 2025-04-26 21:26:34
-# @LastEditTime: 2025-12-01 23:43:17
+# @LastEditTime: 2025-12-01 23:54:42
 # @LastEditors: Cloudflying
 # @Description: Dockenv is a tool to manage docker environment variables.
 ###
@@ -44,6 +44,18 @@ if [ -z "$DOCKER_REGISTRY" ]; then
   echo "DOCKER_REGISTRY is not set."
   exit 1
 fi
+
+_compose_bin()
+{
+  if [[ -n "$(docker-compose)" ]]; then
+    docker-compose "${@}"
+  elif [[ -n "$(docker compose)" ]]; then
+    docker compose "${@}"
+  else
+    echo "No docker-compose or docker compose found."
+    exit 1
+  fi
+}
 
 _red()
 {
@@ -98,7 +110,7 @@ _compose()
     DOCKER_COMPOSE_FILE="${DOCKER_COMPOSE_PATH}/.dev/compose/${1}.compose.yml"
   fi
 
-  docker-compose --env-file .env --progress=tty --project-name=${1} -f ${DOCKER_COMPOSE_FILE} "${@:2}"
+  _compose_bin --env-file .env --progress=tty --project-name=${1} -f ${DOCKER_COMPOSE_FILE} "${@:2}"
 }
 
 _build()
