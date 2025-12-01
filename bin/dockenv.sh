@@ -2,8 +2,8 @@
 ###
 # @Author: Cloudflying
 # @Date: 2025-04-26 21:26:34
- # @LastEditTime: 2025-04-26 23:06:22
- # @LastEditors: Cloudflying
+# @LastEditTime: 2025-12-01 23:43:17
+# @LastEditors: Cloudflying
 # @Description: Dockenv is a tool to manage docker environment variables.
 ###
 START_TIME=$(date +%s)
@@ -25,8 +25,8 @@ else
   exit 1
 fi
 
-if [[ ! -f ".env" ]] && [[ -f ".env.example" ]]; then
-  cp -fr ".env.example" ".env"
+if [[ ! -f ".env" ]] && [[ -f ".example.env" ]]; then
+  cp -fr ".example.env" ".env"
 fi
 
 if [ -f ".env" ]; then
@@ -45,41 +45,48 @@ if [ -z "$DOCKER_REGISTRY" ]; then
   exit 1
 fi
 
-_red() {
+_red()
+{
   printf '\033[1;31;31m%b\033[0m' "$1"
 }
 
-_green() {
+_green()
+{
   printf '\033[1;31;32m%b\033[0m' "$1"
 }
 
-_yellow() {
+_yellow()
+{
   printf '\033[1;31;33m%b\033[0m' "$1"
 }
 
-_info() {
+_info()
+{
   _green "[Info] "
   printf -- "%s" "$1"
   printf "\n"
 }
 
-_warn() {
+_warn()
+{
   _yellow "[Warning] "
   printf -- "%s" "$1"
   printf "\n"
 }
 
-_error() {
+_error()
+{
   _red "[Error] "
   printf -- "%s" "$1"
   printf "\n"
   exit 1
 }
 
-_compose() {
+_compose()
+{
   if [[ -d "${ROOT_PATH}/.dev/compose" ]]; then
     DOCKER_COMPOSE_PATH="${ROOT_PATH}/.dev/compose"
-  elif [[ -d "${DOCKER_COMPOSE_PATH}" ]]; then
+  elif [[ -d ${DOCKER_COMPOSE_PATH} ]]; then
     # shellcheck disable=SC2269
     DOCKER_COMPOSE_PATH="${DOCKER_COMPOSE_PATH}"
   else
@@ -94,10 +101,11 @@ _compose() {
   docker-compose --env-file .env --progress=tty --project-name=${1} -f ${DOCKER_COMPOSE_FILE} "${@:2}"
 }
 
-_build() {
+_build()
+{
   IMAGE_NAME="${1}"
   IMAGE_TAG="${2}"
-  if [[ -n "${PROXY_ADDR}" ]]; then
+  if [[ -n ${PROXY_ADDR} ]]; then
     BUILD_PROXY_ARGS="--build-arg HTTP_PROXY=${PROXY_ADDR} --build-arg HTTPS_PROXY=${PROXY_ADDR} --build-arg NO_PROXY=localhost,127.0.0.1,.example.com,.dev.xie.ke"
   fi
   echo "${DOCKER_IMAGES_PATH}/${IMAGE_NAME}/${IMAGE_TAG}/Dockerfile"
@@ -107,7 +115,8 @@ _build() {
 }
 
 # 批量构建
-_builds() {
+_builds()
+{
   NAME=$1
   [ -d "${DOCKER_IMAGES_PATH}/${NAME}" ] && cd "${DOCKER_IMAGES_PATH}/${NAME}" || echo "${NAME} Not Exist" && exit 1
   # shellcheck disable=SC2066
@@ -116,9 +125,10 @@ _builds() {
   done
 }
 
-_usage() {
+_usage()
+{
   echo "	Docker Env Build Tool"
-  echo "/--------------------------------------------------------\\"
+  echo '/--------------------------------------------------------\'
   echo "| Usage: dockenv [dev|build|pull|run|stop|rm|exec|logs]"
   echo "|  dev:   Run the docker container in development mode."
   echo "|  build: Build the docker image."
@@ -129,32 +139,32 @@ _usage() {
   echo "|  rm:    Remove the docker container."
   echo "|  exec:  Execute a command in the running container."
   echo "|  logs:  View the logs of the running container."
-  echo "\\--------------------------------------------------------/"
+  echo '\--------------------------------------------------------/'
 }
 
 # echo $DOCKER_REGISTRY
 
 case "$1" in
-dev)
-  _compose "${@:2}"
-  ;;
-build)
-  _build "${@:2}"
-  ;;
---build-all | -ba)
-  _builds "${@:2}"
-  ;;
-push)
-  # shellcheck disable=SC2145
-  ${DOCKCLI} push "${DOCKER_REGISTRY}/${@:2}"
-  ;;
-pull)
-  # shellcheck disable=SC2145
-  ${DOCKCLI} pull "${DOCKER_REGISTRY}/${@:2}"
-  ;;
-*)
-  _usage
-  ;;
+  dev)
+    _compose "${@:2}"
+    ;;
+  build)
+    _build "${@:2}"
+    ;;
+  --build-all | -ba)
+    _builds "${@:2}"
+    ;;
+  push)
+    # shellcheck disable=SC2145
+    ${DOCKCLI} push "${DOCKER_REGISTRY}/${@:2}"
+    ;;
+  pull)
+    # shellcheck disable=SC2145
+    ${DOCKCLI} pull "${DOCKER_REGISTRY}/${@:2}"
+    ;;
+  *)
+    _usage
+    ;;
 esac
 
 END_TIME=$(date +%s)
