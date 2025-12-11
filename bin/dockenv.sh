@@ -2,8 +2,8 @@
 ###
 # @Author: Cloudflying
 # @Date: 2025-04-26 21:26:34
- # @LastEditTime: 2025-12-02 00:12:34
- # @LastEditors: Cloudflying
+# @LastEditTime: 2025-12-11 21:34:31
+# @LastEditors: Cloudflying
 # @Description: Dockenv is a tool to manage docker environment variables.
 ###
 START_TIME=$(date +%s)
@@ -12,6 +12,8 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 
 ROOT_PATH=$(dirname $(dirname $(readlink -f "${BASH_SOURCE[0]}")))
+
+cd $ROOT_PATH
 
 DOCKER_IMAGES_PATH="images"
 
