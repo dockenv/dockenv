@@ -1,5 +1,4 @@
 services:
-  # Object Storage Service(Compatible With Amazon S3 Protocol)
   adgh:
     image: ${DOCKER_REGISTRY}/adguard:adgh
     hostname: adgh

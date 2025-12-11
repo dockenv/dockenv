@@ -727,8 +727,18 @@ services:
     restart: always
     environment:
       - TZ=${TIMEZONE}
-      - RUSTFS_ACCESS_KEY=dockenv
-      - RUSTFS_SECRET_KEY=dockpass
+      # - RUSTFS_VOLUMES=/data/rustfs{0...3} # Define 4 storage volumes
+      - RUSTFS_VOLUMES=/data
+      - RUSTFS_ADDRESS=0.0.0.0:9000
+      - RUSTFS_CONSOLE_ADDRESS=0.0.0.0:9001
+      - RUSTFS_CONSOLE_ENABLE=true
+      - RUSTFS_EXTERNAL_ADDRESS=:9000 # Same as internal since no port mapping
+      - RUSTFS_CORS_ALLOWED_ORIGINS=*
+      - RUSTFS_CONSOLE_CORS_ALLOWED_ORIGINS=*
+      - RUSTFS_ACCESS_KEY=${RUSTFS_USER}
+      - RUSTFS_SECRET_KEY=${RUSTFS_PASSWORD}
+      - RUSTFS_OBS_LOGGER_LEVEL=info
+      - RUSTFS_OBS_ENDPOINT=${RUSTFS_OBS_ENDPOINT}
     deploy:
       resources:
         limits:
@@ -736,37 +746,44 @@ services:
           memory: 512M
     expose:
       - 9000
+      - 9001
+    ports:
+      - ${RUSTFS_API_PORT}:9000 # S3 API port
+      - ${RUSTFS_WEB_PORT}:9001 # Console port
     volumes:
       - ../conf/rustfs/config.yaml:/etc/rustfs/config.toml
       - ../data/storage:/data
       - ../logs/storage:/logs
     networks:
       dockenv:
+        ipv4_address: ${IP_RUSTFS}
     dns:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
 
-  portainer:
-    image: portainer/portainer-ee:latest
-    hostname: portainer
-    container_name: portainer
+  gitea:
+    image: ${DOCKER_REGISTRY}/gitea:latest
+    hostname: gitea
+    container_name: gitea
     restart: always
-    deploy:
-      resources:
-        limits:
-          cpus: "1"
-          memory: 512M
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      # - GITEA_CUSTOM=/etc/gitea
     ports:
-      - 8000:8000
-      - 9443:9443
+      - "${GITEA_WEB_PORT}:3000"
+      - "${GITEA_SSH_PORT}:22"
+    depends_on:
+      - mysql80
+    links:
+      - mysql80:mysql80
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ../data/portainer:/data
+      # - gitea:/data
+      - ../conf/gitea:/etc/gitea
+      - ../data/gitea:/data
     networks:
-      dockenv:
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
+      dockenv_dockenv:
+        ipv4_address: ${IP_GITEA}
 
 networks:
   dockenv:
