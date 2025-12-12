@@ -1,18 +1,18 @@
 services:
   # default password ,default user: root
   # grep 'Password:' /etc/gitlab/initial_root_password
-  gitlab:
+  gitlab-jh:
     image: registry.gitlab.cn/omnibus/gitlab-jh:latest
-    hostname: gitlab
-    container_name: gitlab
+    hostname: gitlab-jh
+    container_name: gitlab-jh
     restart: always
-    shm_size: 512mb
+    shm_size: 256m
     environment:
       - GITLAB_ROOT_PASSWORD=${GITLAB_PASSWORD}
     ports:
-      - '2022:22'
-      - '2080:80'
-      - '2443:443'
+      - 2022:22
+      - 2080:80
+      - 2443:443
     volumes:
       # - gitlabconf:/etc/gitlab
       # - gitlablogs:/var/log/gitlab
@@ -20,6 +20,8 @@ services:
       - ../conf/gitlab:/etc/gitlab
       - ../logs/gitlab:/var/log/gitlab
       - ../data/gitlab:/var/opt/gitlab
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
     networks:
       dockenv:
 

@@ -20,7 +20,7 @@ services:
       - ../conf/nginx/components:/etc/nginx/components
       - ${WORKSPACES}:/data
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_NGINX}
     dns:
       - ${DOCKER_DNS1}
@@ -39,7 +39,7 @@ services:
       - ../logs/php74:/var/log/php74
       - ${WORKSPACES}:/data
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_PHP56}
     dns:
       - ${DOCKER_DNS1}
@@ -59,7 +59,7 @@ services:
       - ../logs/php74:/var/log/php74
       - ${WORKSPACES}:/data
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_PHP74}
     dns:
       - ${DOCKER_DNS1}
@@ -82,7 +82,7 @@ services:
       - ../logs/php/80:/var/log/php80
       - ${WORKSPACES}:/data
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_PHP80}
     dns:
       - ${DOCKER_DNS1}
@@ -105,7 +105,7 @@ services:
       - ../logs/php/81:/var/log/php81
       - ${WORKSPACES}:/data
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_PHP81}
     dns:
       - ${DOCKER_DNS1}
@@ -128,7 +128,7 @@ services:
       - ../logs/php/82:/var/log/php82
       - ${WORKSPACES}:/data
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_PHP82}
     dns:
       - ${DOCKER_DNS1}
@@ -151,7 +151,7 @@ services:
       - ../logs/php/83:/var/log/php83
       - ${WORKSPACES}:/data
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_PHP83}
     dns:
       - ${DOCKER_DNS1}
@@ -174,7 +174,7 @@ services:
       - ../logs/php/84:/var/log/php84
       - ${WORKSPACES}:/data
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_PHP84}
     dns:
       - ${DOCKER_DNS1}
@@ -210,7 +210,7 @@ services:
     command: --skip-ssl
     #only for container without host
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_MYSQL57}
     dns:
       - ${DOCKER_DNS1}
@@ -246,7 +246,7 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     #only for container without host
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_MYSQL80}
     dns:
       - ${DOCKER_DNS1}
@@ -282,7 +282,7 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     #only for container without host
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_MYSQL84}
     dns:
       - ${DOCKER_DNS1}
@@ -318,7 +318,7 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     #only for container without host
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_MYSQL93}
     dns:
       - ${DOCKER_DNS1}
@@ -341,7 +341,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - PGDATA=/var/lib/postgresql/data/pgdata
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_POSTGRES16}
     dns:
       - ${DOCKER_DNS1}
@@ -370,7 +370,7 @@ services:
       # - POSTGRES_HOST_AUTH_METHOD=trust
       - PGDATA=/var/lib/postgresql/data/pgdata
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_POSTGRES17}
     dns:
       - ${DOCKER_DNS1}
@@ -394,7 +394,7 @@ services:
     # 数据持久化
     command: redis-server /etc/redis/redis.conf
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_REDIS}
     dns:
       - ${DOCKER_DNS1}
@@ -413,7 +413,7 @@ services:
     volumes:
       - ../conf/valkey/valkey.conf:/etc/valkey/valkey.conf
     networks:
-      dockenv:
+      default:
     dns:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
@@ -444,7 +444,7 @@ services:
     ports:
       - ${MEILISEARCH_PORT}:7700
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_MEILISEARCH}
     dns:
       - ${DOCKER_DNS1}
@@ -460,7 +460,7 @@ services:
     ports:
       - ${MEMCACHED_PORT}:11211
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_MEMCACHED}
     dns:
       - ${DOCKER_DNS1}
@@ -491,7 +491,7 @@ services:
       - ../data/rabbitmq:/var/lib/rabbitmq
       - ../logs/rabbitmq:/var/log/rabbitmq
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_RABBITMQ}
     dns:
       - ${DOCKER_DNS1}
@@ -521,7 +521,7 @@ services:
     # https://docs.docker.com/compose/compose-file/compose-file-v3/#network_mode
     # network_mode: "host"
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_DRAGONFLYDB}
 
   mariadb106:
@@ -545,7 +545,7 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     #only for container without host
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_MARIADB106}
 
   mariadb1011:
@@ -569,7 +569,7 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     #only for container without host
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_MARIADB1011}
 
   mariadb116:
@@ -593,7 +593,7 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     #only for container without host
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_MARIADB116}
 
   mariadb117:
@@ -617,7 +617,7 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     #only for container without host
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_MARIADB117}
 
   mariadb118:
@@ -641,7 +641,7 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     #only for container without host
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_MARIADB118}
 
   mongo6:
@@ -663,7 +663,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
     # command: mongod --config /etc/mongod.conf
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_MONGO6}
     dns:
       - ${DOCKER_DNS1}
@@ -688,7 +688,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
     # command: mongod --config /etc/mongod.conf
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_MONGO7}
     dns:
       - ${DOCKER_DNS1}
@@ -713,7 +713,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
     # command: mongod --config /etc/mongod.conf
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_MONGO8}
     dns:
       - ${DOCKER_DNS1}
@@ -755,42 +755,13 @@ services:
       - ../data/storage:/data
       - ../logs/storage:/logs
     networks:
-      dockenv:
+      default:
         ipv4_address: ${IP_RUSTFS}
     dns:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
 
-  gitea:
-    image: ${DOCKER_REGISTRY}/gitea:latest
-    hostname: gitea
-    container_name: gitea
-    restart: always
-    environment:
-      - USER_UID=1000
-      - USER_GID=1000
-      # - GITEA_CUSTOM=/etc/gitea
-    ports:
-      - "${GITEA_WEB_PORT}:3000"
-      - "${GITEA_SSH_PORT}:22"
-    depends_on:
-      - mysql80
-    links:
-      - mysql80:mysql80
-    volumes:
-      # - gitea:/data
-      - ../conf/gitea:/etc/gitea
-      - ../data/gitea:/data
-    networks:
-      dockenv_dockenv:
-        ipv4_address: ${IP_GITEA}
-
 networks:
-  dockenv:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: ${DOCKER_SUBNET_IP}
-          ip_range: ${DOCKER_SUBNET_RANGE}
-          gateway: ${DOCKER_SUBNET_GATEWAY}
+  default:
+    name: dockenv
+    external: true

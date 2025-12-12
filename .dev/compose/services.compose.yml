@@ -36,12 +36,13 @@ services:
       - ../conf/adgh:/etc/adguardhome
       - ../data/adgh:/opt/adguardhome/work
     networks:
-      dockenv_dockenv:
+      default:
         ipv4_address: ${IP_ADGH}
     dns:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
 
 networks:
-  dockenv_dockenv:
+  default:
+    name: dockenv
     external: true

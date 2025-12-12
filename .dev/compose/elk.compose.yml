@@ -19,7 +19,7 @@ services:
       - xpack.security.http.ssl.enabled=false
       - xpack.security.transport.ssl.enabled=false
       # - bootstrap.memory_lock=true
-      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       # - script.painless.regex.enabled=true
       # - node.master=false
       # - node.data=true
@@ -37,10 +37,10 @@ services:
       - ../logs/elastic:/usr/share/elasticsearch/logs
       # - ${ELASTICSEARCH_CONF_FILE}:/usr/share/elasticsearch/config/elasticsearch.yml
     ports:
-      - '${ELASTIC_WEB_PORT}:9200'
-      - '${ELASTIC_PORT}:9300'
+      - "${ELASTIC_WEB_PORT}:9200"
+      - "${ELASTIC_PORT}:9300"
     networks:
-      dockenv_dockenv:
+      default:
         ipv4_address: ${IP_ELASTICSEARCH}
     dns:
       - ${DOCKER_DNS1}
@@ -65,14 +65,14 @@ services:
       # 解决logstash监控连接报错
       - xpack.monitoring.elasticsearch.hosts=http://elastic:9200
     ports:
-      - '${LOGSTASH_WEB_PORT}:9600'
-      - '${LOGSTASH_PORT}:5044'
+      - "${LOGSTASH_WEB_PORT}:9600"
+      - "${LOGSTASH_PORT}:5044"
     depends_on:
       - elastic
     links:
       - elastic:elasticsearch
     networks:
-      dockenv_dockenv:
+      default:
         ipv4_address: ${IP_LOGSTASH}
     dns:
       - ${DOCKER_DNS1}
@@ -94,18 +94,19 @@ services:
     # volumes:
     # - ../conf/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
     ports:
-      - '${KIBANA_PORT}:5601'
+      - "${KIBANA_PORT}:5601"
     depends_on:
       - elastic
     links:
       - elastic:elastic
     networks:
-      dockenv_dockenv:
+      default:
         ipv4_address: ${IP_KIBANA}
     dns:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
 
 networks:
-  dockenv_dockenv:
+  default:
+    name: dockenv
     external: true

@@ -2,7 +2,7 @@
 ###
 # @Author: Cloudflying
 # @Date: 2025-04-26 21:26:34
-# @LastEditTime: 2025-12-11 21:34:31
+# @LastEditTime: 2025-12-12 11:29:35
 # @LastEditors: Cloudflying
 # @Description: Dockenv is a tool to manage docker environment variables.
 ###
@@ -131,6 +131,20 @@ _builds()
   done
 }
 
+_init_network()
+{
+  docker network create \
+    --driver=bridge \
+    --attachable \
+    --subnet="10.10.0.0/16" \
+    --gateway="10.10.0.1" \
+    --ip-range="10.10.0.0/16" \
+    --ipam-driver=default \
+    --ipv4 \
+    --ipv6 \
+    dockenv
+}
+
 _usage()
 {
   echo "	Docker Env Build Tool"
@@ -167,6 +181,9 @@ case "$1" in
   pull)
     # shellcheck disable=SC2145
     ${DOCKCLI} pull "${DOCKER_REGISTRY}/${@:2}"
+    ;;
+  init-network | -in)
+    _init_network
     ;;
   *)
     _usage
