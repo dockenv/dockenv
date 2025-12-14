@@ -1,0 +1,25 @@
+services:
+  coder:
+    image: ${DOCKER_REGISTRY}/code-server:latest
+    hostname: coder
+    container_name: coder
+    restart: always
+    environment:
+      - USER=${USER:-dockenv}
+      - USER_UID=${UID:-1000}
+      - USER_GID=${GID:-1000}
+      - DEFAULT_PORT=${CODE_SERVER_PORT}
+      - DEFAULT_USER=${USER:-dockenv}
+      - DEFAULT_PASSWD=${CODE_SERVER_PASSWORD}
+    ports:
+      - ${CODE_SERVER_PORT}:${CODE_SERVER_PORT}
+    volumes:
+      - ${HOME}/.config:/home/dockenv/.config
+      - ${WORKSPACES}:/home/dockenv/workspaces
+    networks:
+      default:
+        ipv4_address: ${IP_GITEA}
+
+networks:
+  dockenv_dockenv:
+    external: true

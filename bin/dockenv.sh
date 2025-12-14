@@ -2,7 +2,7 @@
 ###
 # @Author: Cloudflying
 # @Date: 2025-04-26 21:26:34
-# @LastEditTime: 2025-12-12 11:29:35
+# @LastEditTime: 2025-12-14 08:35:57
 # @LastEditors: Cloudflying
 # @Description: Dockenv is a tool to manage docker environment variables.
 ###
@@ -111,12 +111,20 @@ _build()
 {
   IMAGE_NAME="${1}"
   IMAGE_TAG="${2}"
-  if [[ -n ${PROXY_ADDR} ]]; then
-    BUILD_PROXY_ARGS="--build-arg HTTP_PROXY=${PROXY_ADDR} --build-arg HTTPS_PROXY=${PROXY_ADDR} --build-arg NO_PROXY=localhost,127.0.0.1,.example.com,.dev.xie.ke"
-  fi
-  echo "${DOCKER_IMAGES_PATH}/${IMAGE_NAME}/${IMAGE_TAG}/Dockerfile"
+
+  cd ../dockenv-images || exit 1
+
   if [[ -f "${DOCKER_IMAGES_PATH}/${IMAGE_NAME}/${IMAGE_TAG}/Dockerfile" ]]; then
-    echo docker build "${BUILD_PROXY_ARGS}" --progress plain --no-cache -t "${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}" .
+    cd ${DOCKER_IMAGES_PATH}/${IMAGE_NAME}/${IMAGE_TAG} || exit 1
+    docker build \
+      --build-arg http_proxy="${http_proxy}" \
+      --build-arg https_proxy="${http_proxy}" \
+      --build-arg NO_PROXY="${no_proxy}" \
+      --progress plain \
+      --no-cache \
+      -t "${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}" \
+      .
+    cd - || exit 1
   fi
 }
 
