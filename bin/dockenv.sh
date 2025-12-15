@@ -2,7 +2,7 @@
 ###
 # @Author: Cloudflying
 # @Date: 2025-04-26 21:26:34
-# @LastEditTime: 2025-12-14 08:35:57
+# @LastEditTime: 2025-12-15 23:26:21
 # @LastEditors: Cloudflying
 # @Description: Dockenv is a tool to manage docker environment variables.
 ###
@@ -110,7 +110,7 @@ _compose()
 _build()
 {
   IMAGE_NAME="${1}"
-  IMAGE_TAG="${2}"
+  IMAGE_TAG="${2:-latest}"
 
   cd ../dockenv-images || exit 1
 
