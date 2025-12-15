@@ -42,6 +42,17 @@ services:
       - ${DOCKER_DNS1}
       - ${DOCKER_DNS2}
 
+shadowsocks:
+  image: ghcr.io/dockenv/shadowsocks:latest
+  ports:
+    - "6443:6443/tcp"
+    - "6443:6443/udp"
+  environment:
+    - PORT=6443
+    - METHOD=chacha20-ietf-poly1305
+    - PASSWORD=dockpass
+  restart: always
+
 networks:
   default:
     name: dockenv
