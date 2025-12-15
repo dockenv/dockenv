@@ -2,7 +2,7 @@
 ###
 # @Author: Cloudflying
 # @Date: 2025-04-26 21:26:34
-# @LastEditTime: 2025-12-15 23:26:21
+# @LastEditTime: 2025-12-15 23:29:58
 # @LastEditors: Cloudflying
 # @Description: Dockenv is a tool to manage docker environment variables.
 ###
@@ -120,7 +120,7 @@ _build()
       --build-arg http_proxy="${http_proxy}" \
       --build-arg https_proxy="${http_proxy}" \
       --build-arg NO_PROXY="${no_proxy}" \
-      --progress plain \
+      --progress tty \
       --no-cache \
       -t "${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}" \
       .
