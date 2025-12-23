@@ -38,9 +38,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_ADGH}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
 shadowsocks:
   image: ghcr.io/dockenv/shadowsocks:latest

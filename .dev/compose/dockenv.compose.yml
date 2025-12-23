@@ -22,9 +22,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_NGINX}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   php56:
     image: ${DOCKER_REGISTRY}/php:56
@@ -41,9 +38,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_PHP56}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   php74:
     image: ${DOCKER_REGISTRY}/php:74
@@ -61,9 +55,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_PHP74}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   php80:
     image: ${DOCKER_REGISTRY}/php:80
@@ -84,9 +75,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_PHP80}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   php81:
     image: ${DOCKER_REGISTRY}/php:81
@@ -107,9 +95,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_PHP81}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   php82:
     image: ${DOCKER_REGISTRY}/php:82
@@ -130,9 +115,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_PHP82}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   php83:
     image: ${DOCKER_REGISTRY}/php:83
@@ -153,9 +135,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_PHP83}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   php84:
     image: ${DOCKER_REGISTRY}/php:84
@@ -176,9 +155,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_PHP84}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   mysql57:
     image: ${DOCKER_REGISTRY}/mysql:5.7
@@ -212,9 +188,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_MYSQL57}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   mysql80:
     image: ${DOCKER_REGISTRY}/mysql:8.0
@@ -248,9 +221,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_MYSQL80}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   mysql84:
     image: ${DOCKER_REGISTRY}/mysql:8.4
@@ -284,9 +254,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_MYSQL84}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   mysql93:
     image: ${DOCKER_REGISTRY}/mysql:9.3
@@ -320,9 +287,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_MYSQL93}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   postgres16:
     image: ${DOCKER_REGISTRY}/postgres:16
@@ -343,9 +307,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_POSTGRES16}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   postgres17:
     image: ${DOCKER_REGISTRY}/postgres:17
@@ -372,9 +333,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_POSTGRES17}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   redis:
     image: ${DOCKER_REGISTRY}/redis:latest
@@ -396,9 +354,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_REDIS}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   valkey:
     image: ${DOCKER_REGISTRY}/valkey:latest
@@ -414,9 +369,6 @@ services:
       - ../conf/valkey/valkey.conf:/etc/valkey/valkey.conf
     networks:
       default:
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   # https://www.meilisearch.com/docs/learn/configuration/instance_options
   # https://raw.githubusercontent.com/meilisearch/meilisearch/latest/config.toml
@@ -446,9 +398,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_MEILISEARCH}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   memcached:
     image: ${DOCKER_REGISTRY}/memcached:latest
@@ -462,9 +411,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_MEMCACHED}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   rabbitmq:
     image: ${DOCKER_REGISTRY}/rabbitmq:latest
@@ -493,9 +439,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_RABBITMQ}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   dragonflydb:
     image: ${DOCKER_REGISTRY}/dragonflydb:latest
@@ -665,9 +608,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_MONGO6}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   mongo7:
     image: ${DOCKER_REGISTRY}/mongo:7.0
@@ -690,9 +630,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_MONGO7}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   mongo8:
     image: ${DOCKER_REGISTRY}/mongo:8.0
@@ -715,9 +652,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_MONGO8}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
 networks:
   default:

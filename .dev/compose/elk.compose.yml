@@ -42,9 +42,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_ELASTICSEARCH}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   # volumes /usr/share/logstash/config/
   logstash:
@@ -74,9 +71,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_LOGSTASH}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
   kibana:
     image: ${DOCKER_REGISTRY}/kibana:latest
@@ -102,9 +96,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_KIBANA}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
 networks:
   default:

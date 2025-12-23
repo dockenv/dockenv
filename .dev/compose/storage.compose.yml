@@ -37,9 +37,6 @@ services:
     networks:
       default:
         ipv4_address: ${IP_RUSTFS}
-    dns:
-      - ${DOCKER_DNS1}
-      - ${DOCKER_DNS2}
 
 networks:
   default:
