@@ -3,21 +3,27 @@ services:
     image: ${DOCKER_REGISTRY}/aria2:latest
     hostname: aria2
     container_name: aria2
+    environment:
+      - TZ=Asia/Shanghai
+      - USER=${DEFAULT_USER}
+      - UID=${UID}
+      - RPC_SECRET=dockenv
+      - ARIA2_PORT=6800
+      - WEBUI_PORT=6801
+      - DHT_PORT="6802-6999"
     ports:
       - "6800:6800"
       - "6801:6801"
       - "6802-6999:6802-6999"
     volumes:
-      - $HOME/Downloads:/data/downloads:rw
-      # - ../conf/aria2/conf:/etc/aria2c
-    environment:
-      RPC_SECRET: dockenv
-      ARIA2_PORT: 6800
-      WEBUI_PORT: 6801
-      DHT_PORT: "6802-6999"
+      - /etc/localtime:/etc/localtime:ro
+      - $HOME/Downloads:/data/downloads
+      - ../conf/aria2c:/etc/aria2c
+      - ../logs/aria2c:/data.logs
     networks:
-      dockenv:
+      default:
 
 networks:
-  dockenv_dockenv:
+  default:
+    name: dockenv
     external: true
