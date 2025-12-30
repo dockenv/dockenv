@@ -3,6 +3,9 @@ services:
     image: ${DOCKER_REGISTRY}/aria2:latest
     hostname: aria2
     container_name: aria2
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
     environment:
       - TZ=Asia/Shanghai
       - USER=${DEFAULT_USER}
