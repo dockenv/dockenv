@@ -1,0 +1,51 @@
+services:
+  alpine:
+    image: qemux/qemu
+    container_name: alpine
+    environment:
+      BOOT: "alpine"
+      RAM_SIZE: "1G"
+      CPU_CORES: "1"
+      DISK_SIZE: "16G"
+    devices:
+      - /dev/kvm
+      - /dev/net/tun
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - 8006:8006
+    volumes:
+      - ./qemu:/storage
+    restart: always
+    stop_grace_period: 2m
+    networks:
+      default:
+
+  fnos:
+    image: ghcr.io/qemus/qemu:latest
+    container_name: fnos
+    environment:
+      BOOT: "https://iso.liveupdate.fnnas.com/x86_64/trim/fnos-0.9.11-946.iso"
+      RAM_SIZE: "2G"
+      CPU_CORES: "4"
+      DISK_SIZE: "16G"
+      DISK2_SIZE: "64G"
+    devices:
+      - /dev/kvm
+      - /dev/net/tun
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - 8006:8006
+      - 5666:5666
+    volumes:
+      - /dir1:/storage
+      - /dir2:/storage2
+    restart: unless-stopped
+    stop_grace_period: 2m
+    networks:
+      default:
+
+networks:
+  dockenv_dockenv:
+    external: true
