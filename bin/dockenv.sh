@@ -2,7 +2,7 @@
 ###
 # @Author: Cloudflying
 # @Date: 2025-04-26 21:26:34
-# @LastEditTime: 2025-12-23 16:12:03
+# @LastEditTime: 2026-02-02 14:14:17
 # @LastEditors: Cloudflying
 # @Description: Dockenv is a tool to manage docker environment variables.
 ###
@@ -147,7 +147,6 @@ _init_network()
     --gateway="172.172.0.1" \
     --ip-range="172.172.0.0/16" \
     --ipv4 \
-    --ipv6 \
     --opt com.docker.network.bridge.enable_icc=true \
     --opt com.docker.network.bridge.enable_ip_masquerade=true \
     --opt com.docker.network.bridge.host_binding_ipv4=0.0.0.0 \
