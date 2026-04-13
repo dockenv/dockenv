@@ -2,7 +2,7 @@
 ###
 # @Author: Cloudflying
 # @Date: 2025-04-26 21:26:34
-# @LastEditTime: 2026-03-12 22:14:03
+# @LastEditTime: 2026-04-13 11:13:50
 # @LastEditors: Cloudflying
 # @Description: Dockenv is a tool to manage docker environment variables.
 ###
@@ -15,7 +15,9 @@ ROOT_PATH=$(dirname $(dirname $(readlink -f "${BASH_SOURCE[0]}")))
 
 cd $ROOT_PATH
 
-export UID=$(id -u)
+if [[ -z ${UID} ]]; then
+  export UID=$(id -u)
+fi
 
 DOCKER_IMAGES_PATH="images"
 

@@ -635,7 +635,7 @@ services:
     image: ${DOCKER_REGISTRY}/mongo:8.0
     hostname: mongo8
     container_name: mongo8
-    restart: always
+    restart: unless-stopped
     expose:
       - 27017
     ports:
@@ -652,6 +652,24 @@ services:
     networks:
       default:
         ipv4_address: ${IP_MONGO8}
+
+  librefang:
+    image: ${DOCKER_REGISTRY}/librefang:latest
+    hostname: librefang
+    container_name: librefang
+    restart: unless-stopped
+    expose:
+      - 4545
+    ports:
+      - ${LIBREFANG_PORT}:4545
+    volumes:
+      - ../data/librefang:/data
+    environment:
+      TZ: ${TIMEZONE}
+      LIBREFANG_LISTEN: 0.0.0.0:4545
+    networks:
+      default:
+        ipv4_address: ${IP_LIBREFANG}
 
 networks:
   default:
