@@ -232,7 +232,7 @@ services:
     ports:
       - ${MYSQL84_PORT}:3306
     volumes:
-      # - ../conf/mysql84/my.cnf:/etc/my.cnf
+      - ../conf/mysql84/my.cnf:/etc/my.cnf
       - ../data/mysql84:/var/lib/mysql
       - ../logs/mysql84:/var/log/mysql
     environment:
