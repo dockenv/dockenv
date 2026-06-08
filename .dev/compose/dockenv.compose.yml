@@ -334,6 +334,33 @@ services:
       default:
         ipv4_address: ${IP_POSTGRES17}
 
+  postgres18:
+    image: ${DOCKER_REGISTRY}/postgres:18
+    hostname: postgres18
+    container_name: postgres18
+    restart: always
+    expose:
+      - 5432
+    ports:
+      - ${POSTGRES18_PORT}:5432
+    volumes:
+      - ../data/postgres18:/var/lib/postgresql/data
+      - ../conf/postgres18/postgres.conf:/var/lib/postgresql/data/pgdata/postgresql.conf
+      - type: tmpfs
+        target: /dev/shm
+        tmpfs:
+          size: 134217728 # 128*2^20 bytes = 128Mb
+    environment:
+      - TZ="Asia/Shanghai"
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      # - POSTGRES_HOST_AUTH_METHOD=trust
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    networks:
+      default:
+        ipv4_address: ${IP_POSTGRES18}
+
   redis:
     image: ${DOCKER_REGISTRY}/redis:latest
     container_name: redis
