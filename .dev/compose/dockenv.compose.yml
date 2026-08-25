@@ -142,6 +142,9 @@ services:
     container_name: php84
     restart: always
     privileged: true
+    depends_on:
+      - redis
+      - mysql84
     expose:
       - 9000
     ports:
